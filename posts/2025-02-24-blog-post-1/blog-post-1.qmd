@@ -6,3 +6,18 @@ date-modified: "2025-02-24"
 draft: FALSE
 ---
 
+1.
+NYPD Arrest Data (Year to Date):
+
+https://catalog.data.gov/dataset/nypd-arrest-data-year-to-date
+
+2.
+Drug overdose death rates, by drug type, sex, age, race, and Hispanic origin: United States:
+
+https://catalog.data.gov/dataset/drug-overdose-death-rates-by-drug-type-sex-age-race-and-hispanic-origin-united-states-3f72f
+
+3.
+Fertility Rate By Race
+
+https://www.kaggle.com/datasets/loveall/fertility-rate-by-race
+
