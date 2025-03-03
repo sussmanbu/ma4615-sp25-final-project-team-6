@@ -46,4 +46,12 @@ https://www.kaggle.com/datasets/loveall/fertility-rate-by-race
 
 a.5 columns, 423 rows
 
+b.No references labeled on where it was originally collected. Most likely collected from the NCHS (National Center for Health Statistics). This data is also most likely collected from sources from the United States.
+
+c.Yes, able to clean the dataset, however the data is already very cleaned, there are a few missing values.
+
+d.Which race has the highest fertility rate? How does time correlate with fertility rate for each respective race?
+
+e.There are not a lot of conclusions to extrapolate, such as why these values are the way they are, which is a much more interesting and valuable insight to find.
+
 
