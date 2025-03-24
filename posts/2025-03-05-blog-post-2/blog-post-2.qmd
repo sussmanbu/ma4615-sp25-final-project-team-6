@@ -1,0 +1,21 @@
+---
+title: "Blog Post 2"
+author: "Team 6"
+date: "2025-03-05"
+date-modified: "2025-03-05"
+draft: FALSE
+---
+
+  Our dataset focused on New York Police Department arrest Data and was separated according to what kind of crime was committed, along with the location where it occurred. Members of the Office of Management Analysis review sets of data over time and update the database. NYC Open Data acquires more cases from agencies that are responsible for managing such cases. NYPD serves as one of the oldest police departments and is notorious for dealing with heinous crimes, some of them being setting a man on fire. The data we found was referenced from the data.gov website. The data that we viewed was from the original source, as it is the data set that police agencies from NYC Open Data view and update. 
+  
+  
+  The dataset looks unorganized, with the age groups of the felonies being in random order and race category in random order, along with the dates not being in chronological order. The sample population would be the first 10,000 columns, as any further columns have empty datasets. The dataset isn’t necessarily biased, as it is a mere record of criminal activity not in a specific order or specialization. This data is used by journalists, researchers and even advocacy groups who all analyze practices of crime and arrests within New York City. There has been other research on it from numerous policy research and academic papers that use the data to study racial disparities in several areas. This data is not specifically used for policy decisions, however it can be involved in discussions regarding racial profiling and police reform, enabling a change in the criminal justice system in New York City. Some common questions that others asked about this data are as follows:
+  
+  
+1.Are certain racial or ethnic groups disproportionately arrested?
+
+2.How do arrest patterns vary by borough or precinct?
+
+3.How has NYPD enforcement shifted over time?
+
+4.What types of crimes result in the most arrests?

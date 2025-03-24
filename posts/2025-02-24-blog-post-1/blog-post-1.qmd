@@ -1,0 +1,57 @@
+---
+title: "Blog Post 1"
+author: "Team 6"
+date: "2025-02-24"
+date-modified: "2025-02-24"
+draft: FALSE
+---
+
+1.
+NYPD Arrest Data (Year to Date):
+
+https://catalog.data.gov/dataset/nypd-arrest-data-year-to-date
+
+
+a.260,504 rows & 19 columns
+
+b.The dataset includes all arrests made by the NYPD in New York City, manually extracted quarterly and reviewed by the Office of Management Analysis and Planning. Originally created in 2018 and last updated in January 2025, it provides detailed information on crime type, location, time of enforcement, and suspect demographics. This publicly available dataset offers insights into the patterns and nature of police enforcement activity. 
+
+c.Yes, dataset can be loaded and cleaned.
+
+d.1.How do arrest rates differ across the five boroughs in NYC based on 2025 data? 2. Is there a correlation between the time of arrest and the type of crime committed? 3. How do arrest rates by race vary across different crime types? 
+
+e.The potential challenges include missing or incomplete data (e.g. some arrests lack key details) and variations in how certain crimes are recorded, resulting in unclear interpretations.
+
+
+2.
+Drug overdose death rates, by drug type, sex, age, race, and Hispanic origin: United States:
+
+https://catalog.data.gov/dataset/drug-overdose-death-rates-by-drug-type-sex-age-race-and-hispanic-origin-united-states-3f72f
+
+a.6229 rows and 15 columns
+
+b.This dataset is compiled by the National Center for Health Statistics (NCHS) through the National Vital Statistics System (NVSS), which gathers mortality data from state-issued death certificates. Its main purpose is to track drug overdose deaths by various demographics—such as drug type, sex, age, race, and Hispanic origin—so that public health officials and policymakers can monitor trends, identify high-risk groups, and allocate resources effectively.
+
+c.Yes, able to clean the dataset.
+
+d.How have drug overdose death rates changed over time in the United States?
+
+e.A key challenge is dealing with missing or inconsistent data entries across different states, which can complicate cleaning efforts and affect the accuracy of trend analysis.
+
+
+3.
+Fertility Rate By Race
+
+https://www.kaggle.com/datasets/loveall/fertility-rate-by-race
+
+a.5 columns, 423 rows
+
+b.No references labeled on where it was originally collected. Most likely collected from the NCHS (National Center for Health Statistics). This data is also most likely collected from sources from the United States.
+
+c.Yes, able to clean the dataset, however the data is already very cleaned, there are a few missing values.
+
+d.Which race has the highest fertility rate? How does time correlate with fertility rate for each respective race?
+
+e.There are not a lot of conclusions to extrapolate, such as why these values are the way they are, which is a much more interesting and valuable insight to find.
+
+
