@@ -1,0 +1,34 @@
+---
+title: "Blog Post 3"
+author: "Team 6"
+date: "2025-03-24"
+date-modified: "2025-03-24"
+draft: FALSE
+---
+To clean the NYPD arrest dataset, we focused on selecting only the variables relevant to our analysis - race category, gender, age group, borough of arrest, offense category, and police description of the crime. We removed fully empty columns and unnecessary categories such as arrest date, arrest key, and jurisdiction code. We standardized column names and cleaned string variables by trimming whitespace and applying consistent formatting (e.g., title-casing offense descriptions). All categorical variables, such as age group, race, and borough were converted to factors for easier future analysis. We also eliminated any rows with missing values for easier future analysis as well. Here is the code for our cleaned dataset which can be found under the folder dataset:
+
+library(tidyverse)
+library(janitor)
+library(lubridate)
+raw_data <- read_csv("dataset/NYPD_Arrest_Data__Year_to_Date_.csv")
+cleaned_data <- raw_data %>%
+  clean_names() %>%                                         
+  select(where(~ !all(is.na(.)))) %>%                      
+  select(                                                   
+    perp_race,           
+    perp_sex,            
+    age_group,           
+    arrest_boro,         
+    ofns_desc,           
+    pd_desc              
+  ) %>%
+  mutate(
+    perp_race = factor(str_trim(perp_race)),                
+    perp_sex = factor(str_trim(perp_sex)),
+    age_group = factor(str_trim(age_group)),
+    arrest_boro = factor(str_trim(arrest_boro)),
+    ofns_desc = str_to_title(str_trim(ofns_desc)),          
+    pd_desc = str_to_title(str_trim(pd_desc))
+  ) %>%
+  drop_na()                                                 
+write_rds(cleaned_data, "dataset/cleaned_dataset.rds")
