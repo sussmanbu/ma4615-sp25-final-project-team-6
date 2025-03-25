@@ -32,3 +32,42 @@ cleaned_data <- raw_data %>%
   ) %>%
   drop_na()                                                 
 write_rds(cleaned_data, "dataset/cleaned_dataset.rds")
+
+Data Analysis:
+```{r}
+library(tidyverse)
+race_offense_table <- cleaned_data %>%
+  count(perp_race, ofns_desc, sort = TRUE) %>%
+  group_by(perp_race) %>%
+  slice_max(n, n = 5) %>%
+  arrange(perp_race, desc(n))
+
+print(race_offense_table)
+```
+
+To better understand the relationship between race and type of offense, we created a table displaying the top five offenses by race. This summarized table allows us to identify whether certain offenses are disproportionately represented in certain racial groups and enables us to discover  any unusual or unexpected patterns in the dataset.
+
+```{r}
+cleaned_data %>%
+  count(perp_sex, ofns_desc, sort = TRUE) %>%
+  group_by(perp_sex) %>%
+  slice_max(n, n = 3) %>%
+  ungroup() %>%
+  ggplot(aes(x = reorder(ofns_desc, n), y = n)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~ perp_sex, scales = "free_y") +
+  labs(
+    title = "Top 3 Offense Categories according to Gender",
+    x = "Offense Category",
+    y = "Number of Arrests"
+  )
+```
+The bar charts display the 3 most common offense categories for males and females in the dataset. While both genders share similar top offenses such as, assault-related charges and petit larceny, males are arrested at a higher frequency for each of the 3 offense categories. This visualization allows for an easier comparison of actual counts, pointing to the disparities in number of offenses respective to gender.
+
+```{r}
+cleaned_data %>%
+  count(perp_race, sort = TRUE)
+```
+
+This table looks at the distribution of arrests by race categories. We found that a disproportionate number of arrests (122049) were recorded for individuals who are 'Black', which is way higher than other races. In comparison, categories including American Indian/Alaskan Native and Unknown had fewer than 1,000 arrests each. These patterns could be showing real-world differences, but also allows us to raise further questions when analyzing our dataset.
