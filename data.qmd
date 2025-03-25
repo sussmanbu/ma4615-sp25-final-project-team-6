@@ -63,10 +63,36 @@ You will
 
 * Describe where/how to find data.
   * You must include a link to the original data source(s). Make sure to provide attribution to those who collected the data.
+
+Link to the original data source: https://catalog.data.gov/dataset/nypd-arrest-data-year-to-date
+The dataset can be found from data.gov and we used the csv file under the link above. 
+
   * Why was the data collected/curated? Who put it together? (This is important, if you don't know why it was collected then that might not be a good dataset to look at.
+  
+The data includes all arrests made by the NYPD in New York City, manually extracted quarterly and reviewed by the Office of Management Analysis and Planning. Originally created in 2018 and last updated in January 2025, it provides detailed information on crime type, location, time of enforcement, and suspect demographics. This publicly available dataset offers insights into the patterns and nature of police enforcement activity. 
+
 * Describe the different data files used and what each variable means. 
   * If you have many variables then only describe the most relevant ones, possibly grouping together variables that are similar, and summarize the rest.
+  
+Out of the 19 variables in the dataset, we focused on selecting only the variables relevant to our analysis - race category, gender, age group, borough of arrest, offense category, and police description of the crime.
+
   * Use figures or tables to help explain the data. For example, showing a histogram or bar chart for a particularly important variable can provide a quick overview of the values that variable tends to take.
+  
+```{r}
+library(tidyverse)
+cleaned_data %>%
+  count(perp_race, sort = TRUE) %>%
+  ggplot(aes(x = reorder(perp_race, n), y = n)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Number of Arrests by Race",
+    x = "Race",
+    y = "Number of Arrests"
+  )
+```
+The bar chart shows the number of arrests by race category. The majority of arrests are of individuals identified as Black. Other categories including White Hispanic and Black Hispanic appear frequently, whereas some categories — including American Indian/Alaskan Native — are far less common. This plot summarizes which groups are most represented in the dataset and also raises questions about potential systemic factors contributing to arrest trends.
+
 * Describe any cleaning you had to do for your data.
   * You *must* include a link to your `clean_data.R` file.
   * Rename variables and recode factors to make data more clear.
@@ -76,3 +102,34 @@ You will
 * Organization, clarity, cleanliness of the page
   * Make sure to remove excessive warnings, use clean easy-to-read code (without side scrolling), organize with sections, use bullets and other organization tools, etc.
   * This page should be self-contained.
+  
+Data cleaning:
+Link to cleaned data file: https://github.com/sussmanbu/ma4615-sp25-final-project-team-6/blob/main/dataset/cleaned_dataset.rds
+
+To clean the NYPD arrest dataset, we focused on selecting only the variables relevant to our analysis - race category, gender, age group, borough of arrest, offense category, and police description of the crime. We removed fully empty columns and unnecessary categories such as arrest date, arrest key, and jurisdiction code. We standardized column names and cleaned string variables by trimming whitespace and applying consistent formatting (e.g., title-casing offense descriptions). All categorical variables, such as age group, race, and borough were converted to factors for easier future analysis. We also eliminated any rows with missing values for easier future analysis as well. Here is the code we used to clean our dataset:
+
+library(tidyverse)
+library(janitor)
+library(lubridate)
+raw_data <- read_csv("dataset/NYPD_Arrest_Data__Year_to_Date_.csv")
+cleaned_data <- raw_data %>%
+  clean_names() %>%                                         
+  select(where(~ !all(is.na(.)))) %>%                      
+  select(                                                   
+    perp_race,           
+    perp_sex,            
+    age_group,           
+    arrest_boro,         
+    ofns_desc,           
+    pd_desc              
+  ) %>%
+  mutate(
+    perp_race = factor(str_trim(perp_race)),                
+    perp_sex = factor(str_trim(perp_sex)),
+    age_group = factor(str_trim(age_group)),
+    arrest_boro = factor(str_trim(arrest_boro)),
+    ofns_desc = str_to_title(str_trim(ofns_desc)),          
+    pd_desc = str_to_title(str_trim(pd_desc))
+  ) %>%
+  drop_na()                                                 
+write_rds(cleaned_data, "dataset/cleaned_dataset.rds")
