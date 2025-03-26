@@ -80,6 +80,7 @@ Out of the 19 variables in the dataset, we focused on selecting only the variabl
   
 ```{r}
 library(tidyverse)
+cleaned_data <- read_rds("dataset/cleaned_dataset.rds")
 cleaned_data %>%
   count(perp_race, sort = TRUE) %>%
   ggplot(aes(x = reorder(perp_race, n), y = n)) +

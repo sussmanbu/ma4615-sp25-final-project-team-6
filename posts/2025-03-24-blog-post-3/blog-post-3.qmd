@@ -36,6 +36,9 @@ write_rds(cleaned_data, "dataset/cleaned_dataset.rds")
 Data Analysis:
 ```{r}
 library(tidyverse)
+library(janitor)
+library(lubridate)
+cleaned_data <- read_rds("dataset/cleaned_dataset.rds")
 race_offense_table <- cleaned_data %>%
   count(perp_race, ofns_desc, sort = TRUE) %>%
   group_by(perp_race) %>%
