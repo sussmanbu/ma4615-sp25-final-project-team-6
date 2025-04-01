@@ -6,3 +6,96 @@ date-modified: "2025-03-31"
 draft: FALSE
 ---
 
+In our previous posts 2 and 3, we identified some of the big, obvious trends in the NYPD Arrest dataset.
+
+For Blog Post 4, we took a two-pronged approach:
+
+1.Breadth: We examined how these trends relate to other variables in the dataset.
+
+2.Depth: We zoomed in on one specific relationship to understand its underlying drivers, and we began our initial exploration into statistical modeling.
+
+EDA Output 1: Offense Type by Race
+
+We started by analyzing the relationship between offense type and race. By grouping the data by race and then identifying the top five offenses for each racial group, we created a summary table that highlights the relative frequency of various offenses.
+
+Key insights from this analysis included:
+
+Even though Felony Assault and Petit Larceny appear frequently across all races, the ranking and counts differ.
+
+Some racial groups show a different offense mix, suggesting that while the overall trend of high counts in common offenses is evident, there are underlying variations that merit further exploration.
+
+```{r}
+library(tidyverse)
+library(janitor)
+cleaned_data <- read_rds("dataset/cleaned_dataset.rds")
+race_offense_table <- cleaned_data %>%
+  count(perp_race, ofns_desc, sort = TRUE) %>%
+  group_by(perp_race) %>%
+  slice_max(n, n = 5) %>%
+  ungroup() %>%
+  arrange(perp_race, desc(n))
+ggplot(race_offense_table, aes(x = reorder(ofns_desc, n), y = n, fill = perp_race)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ perp_race, scales = "free_y") +
+  coord_flip() +
+  labs(
+    title = "Top 5 Offense Types by Race",
+    x = "Offense Type",
+    y = "Number of Arrests"
+  )
+
+```
+
+EDA Output 2: Top Offenses by Gender
+
+Next, we compared offense frequencies by gender. A bar chart of the top three offenses for males and females revealed that both genders share similar offense categories. However, males are arrested in significantly higher numbers across these categories.
+
+Key insights here are:
+
+The types of offenses remain consistent between genders, but the volume of arrests varies greatly.
+
+This observation raises further questions about whether demographic distribution or other confounding factors are influencing the observed differences.
+
+```{r}
+
+cleaned_data <- read_rds("dataset/cleaned_dataset.rds")
+cleaned_data %>%
+  count(perp_sex, ofns_desc, sort = TRUE) %>%
+  group_by(perp_sex) %>%
+  slice_max(n, n = 3) %>%
+  ungroup() %>%
+  ggplot(aes(x = reorder(ofns_desc, n), y = n)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~ perp_sex, scales = "free_y") +
+  labs(
+    title = "Top 3 Offense Categories according to Gender",
+    x = "Offense Category",
+    y = "Number of Arrests"
+  )
+
+```
+
+
+Modeling Approach:
+
+Response Variable: Arrest Borough
+
+Predictor Variables: Offense Description, Race, and Age Group
+
+Data Transformations: We consolidated infrequent offense types through factor lumping and transformed categorical variables into dummy variables to make them compatible with the model.
+
+Model Type: Since our response variable is categorical, we used multinomial logistic regression.
+
+Our next steps include:
+
+Experimenting with more advanced models (like random forests or gradient boosting) to capture non-linear interactions.
+
+Testing interaction terms (such as race by offense or age by race) in our logistic regression.
+
+Incorporating additional variables, like temporal data, to assess how these patterns evolve over time.
+
+Potentially normalizing by borough population to better understand enforcement intensity.
+
+By moving from descriptive analysis to predictive modeling, we’re beginning to answer not only “what is happening?” but also “why is it happening?” This progression is essential as it deepens our insights and opens up new avenues for both academic inquiry and policy discussion.
+
