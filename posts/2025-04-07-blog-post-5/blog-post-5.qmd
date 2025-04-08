@@ -1,0 +1,29 @@
+---
+title: "Blog Post 5"
+author: "Team 6"
+date: "2025-04-07"
+date-modified: "2025-04-07"
+draft: FALSE
+---
+
+Datasets we will be combining are:
+Primary Dataset - NYPD Arrest Data (2024). Our cleaned dataset includes variables such as perp_race, perp_sex, age_group, ofns_desc (offense description), and arrest_boro (borough where the arrest occurred) throughout the year 2024.
+Secondary Dataset - American Community Survey (ACS) 2023 1-Year Estimates – We will be honing in on the boroughs that are included in our primary dataset - Bronx, Staten Island, Brooklyn, Manhattan, and Queens. Specifically, we will be using the following metrics for each of the 5 boroughs 
+- Unemployment Rate (Table: S2301)
+- Median Household Income (Table: S1901)
+- Poverty Rate (Table: S1701) 
+
+How the datasets will be combined:
+Both datasets contain borough identifiers, so we will combine the datasets using the arrest_boro field from our cleaned NYPD Arrest data and matching borough names in the ACS data (Bronx, Staten Island, Brooklyn, Manhattan, Queens).
+
+We chose to combine the arrest data with economic indicators from the 2023 American Community Survey (ACS) 1-Year Estimates for a few reasons:
+- The NYPD dataset provides information on who is being arrested and where, but it doesn’t explain why certain boroughs might have more arrests and crimes. Hence, including borough-level data on unemployment, poverty, and income for the respective boroughs adds broader context that can be used to answer our overarching research question. 
+- Arrest or crime patterns are greatly influenced by structural conditions in an area, such as economic inequality and unemployment. Including economic data will enable us to examine whether boroughs with higher poverty, higher unemployment and lower household income experience higher arrest rates.
+- Furthermore, the 2023 ACS 1-Year Estimates are the most recent reliable economic data that is available and align with the 2024 NYPD arrest data. 
+
+Initial findings:
+From our cleaned NYPD dataset, we found that Brooklyn had the highest number of arrests (72,325 arrests in 2024), followed by Manhattan, the Bronx, and Queens. Staten Island had the fewest number of arrests. This pattern aligns with economic indicators from the ACS 2023 dataset Brooklyn has relatively high unemployment (6.7%) and moderate poverty (18.3%), suggesting that these economic conditions could be contributing to higher arrests. 
+With the lowest poverty and unemployment rates, Staten Island has by far the lowest arrest count (11,055). Hence, the conclusion is that boroughs with lower income, higher unemployment, and higher poverty tend to have more arrests in general.
+
+Potential difficulties in combining the datasets:
+The NYPD arrest data is based on the year 2024, whereas the most recent economic data available from the ACS is 2023. Hence, some comparisons may not reflect the exact state of the economic conditions during the time of arrest. Secondly, some of the offense descriptions in the NYPD arrest data are vague, which can make it difficult to categorize offenses as economically motivated or not. 
