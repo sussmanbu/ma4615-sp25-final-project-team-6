@@ -5,4 +5,138 @@ date: "2025-04-14"
 date-modified: "2025-04-14"
 draft: FALSE
 ---
+```{r}
+library(tidyverse)
+library(sf)
+combined_data <- readRDS("dataset/combined_nypd_acs_with_coords_fixed.rds")
+nyc_map <- st_read("dataset/nybb.shp")
+```
 
+Arrest Count by Borough
+```{r}
+combined_data %>%
+  count(arrest_boro) %>%
+  ggplot(aes(x = reorder(arrest_boro, -n), y = n, fill = arrest_boro)) +
+  geom_col() +
+  labs(title = "Total Arrests by Borough in 2024", x = "Borough", y = "Number of Arrests") +
+  theme_minimal()
+
+```
+
+Arrests vs. Unemployment Rate
+```{r}
+combined_data %>%
+  count(arrest_boro) %>%
+  left_join(distinct(combined_data, arrest_boro, unemployment_rate), by = "arrest_boro") %>%
+  ggplot(aes(x = unemployment_rate, y = n, label = arrest_boro)) +
+  geom_point(size = 4, color = "steelblue") +
+  geom_text(vjust = -1) +
+  labs(title = "Arrests vs Unemployment Rate by Borough",
+       x = "Unemployment Rate (%)", y = "Number of Arrests") +
+  theme_minimal()
+
+```
+Arrests by Race and Sex
+```{r}
+combined_data %>%
+  count(arrest_boro, perp_race) %>%
+  ggplot(aes(x = arrest_boro, y = n, fill = perp_race)) +
+  geom_col(position = "dodge") +
+  labs(title = "Arrests by Borough and Race", x = "Borough", y = "Number of Arrests", fill = "Race") +
+  theme_minimal()
+
+combined_data %>%
+  count(arrest_boro, perp_sex) %>%
+  ggplot(aes(x = arrest_boro, y = n, fill = perp_sex)) +
+  geom_col(position = "dodge") +
+  labs(title = "Arrests by Borough and Sex", x = "Borough", y = "Number of Arrests", fill = "Sex") +
+  theme_minimal()
+
+```
+
+Top Offense Types in High vs Low Unemployment Areas
+```{r}
+combined_data %>%
+  distinct(arrest_boro, unemployment_rate) %>%
+  mutate(unemployment_level = ifelse(unemployment_rate >= median(unemployment_rate, na.rm = TRUE),
+                                     "High Unemployment", "Low Unemployment")) -> boro_unemp_group
+
+combined_data %>%
+  left_join(boro_unemp_group, by = "arrest_boro") %>%
+  count(unemployment_level, ofns_desc) %>%
+  group_by(unemployment_level) %>%
+  mutate(prop = n / sum(n)) %>%
+  slice_max(prop, n = 10, with_ties = FALSE) %>%
+  ggplot(aes(x = reorder(ofns_desc, prop), y = prop, fill = unemployment_level)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  labs(title = "Top Offense Types in High vs Low Unemployment Boroughs",
+       x = "Offense Description", y = "Proportion", fill = "Unemployment Level") +
+  theme_minimal()
+
+```
+
+Arrest Map - Colored by Race
+```{r}
+arrest_points <- combined_data %>%
+  filter(!is.na(longitude), !is.na(latitude)) %>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326, remove = FALSE)
+
+set.seed(42)
+plot_data <- arrest_points %>% sample_n(3000)
+
+ggplot() +
+  geom_sf(data = nyc_map, fill = "gray95", color = "black") +
+  geom_sf(data = plot_data, aes(color = perp_race), size = 1, alpha = 0.6) +
+  labs(title = "Arrest Locations in NYC (2024)",
+       subtitle = "Each point represents an arrest. Colored by race.",
+       color = "Race") +
+  theme_minimal()
+
+```
+```{r}
+library(tidyverse)
+library(sf)
+
+combined_data <- readRDS("dataset/combined_nypd_acs_with_coords_fixed.rds")
+nyc_map <- st_read("dataset/nybb.shp")
+
+combined_data <- combined_data %>%
+  mutate(unemployment_rate = as.numeric(unemployment_rate))
+
+borough_unemp <- combined_data %>%
+  group_by(borough) %>%
+  summarise(unemployment_rate = mean(unemployment_rate, na.rm = TRUE))
+
+nyc_map <- nyc_map %>%
+  mutate(borough = case_when(
+    BoroName == "Manhattan" ~ "MANHATTAN",
+    BoroName == "Brooklyn" ~ "BROOKLYN",
+    BoroName == "Queens" ~ "QUEENS",
+    BoroName == "Bronx" ~ "BRONX",
+    BoroName == "Staten Island" ~ "STATEN ISLAND"
+  )) %>%
+  left_join(borough_unemp %>% select(borough, unemployment_rate), by = "borough") %>%
+  select(-matches("^unemployment_rate\\..*"))
+
+arrest_points <- combined_data %>%
+  filter(!is.na(longitude), !is.na(latitude)) %>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326, remove = FALSE)
+
+set.seed(42)
+plot_data <- arrest_points %>% sample_n(3000)
+
+ggplot() +
+  geom_sf(data = nyc_map, aes(fill = unemployment_rate), color = "white") +
+  scale_fill_gradient(low = "lightyellow", high = "darkred", na.value = "grey80") +
+  geom_sf(data = plot_data, aes(color = perp_race), size = 1, alpha = 0.6) +
+  labs(
+    title = "NYC Arrest Locations Overlaid on Borough Unemployment Rates (2024)",
+    subtitle = "Boroughs shaded by unemployment rate. Points show arrests colored by race.",
+    fill = "Unemployment Rate (%)",
+    color = "Race"
+  ) +
+  theme_minimal()
+
+
+```
