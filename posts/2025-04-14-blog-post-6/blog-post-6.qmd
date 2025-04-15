@@ -1,0 +1,8 @@
+---
+title: "Blog Post 6"
+author: "Team 6"
+date: "2025-04-14"
+date-modified: "2025-04-14"
+draft: FALSE
+---
+
