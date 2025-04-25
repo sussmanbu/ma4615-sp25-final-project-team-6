@@ -1,0 +1,104 @@
+---
+title: "Blog Post 7"
+author: ""
+date: "2025-04-25"
+date-modified: "2025-04-25"
+draft: FALSE
+---
+The interactive will be built using Shiny in R and will include clear, guided visuals like line charts and possibly a map view for location-based insights. I'm currently in the process of cleaning the dataset and identifying the most useful variables for filtering and analysis. The interactive aspect—letting users control what data they see—will help highlight interesting patterns and make the experience more personal and impactful.
+
+**Progress**  
+We’ve explored the NYPD arrest + ACS data and cleaned it into `combined_data`.  That object has borough names, offense description, demographics, coordinates, and unemployment rate—but no date column—so for our “big picture” we’ll start with a static bar chart of arrests by borough, then let the user drill in via filters.
+
+**Interactive**
+We’re building the Arrest Trends Explorer Shiny dashboard to let users explore NYPD arrest data from multiple angles:
+- A dynamic time-series of total arrests, with the ability to switch between line charts, bar charts, and map overlays.
+- Filters for borough, offense type, and demographic slices (race, sex, age group).
+```{r}
+library(tidyverse)
+library(shiny)
+
+combined_data <- readRDS("dataset/combined_nypd_acs_with_coords_fixed.rds") %>%
+  mutate(unemployment_rate = as.numeric(unemployment_rate))
+
+boro_choices   <- c("All", sort(unique(combined_data$borough)))
+offense_choices <- c("All", sort(unique(combined_data$ofns_desc)))
+race_choices   <- c("All", sort(unique(combined_data$perp_race)))
+sex_choices    <- c("All", sort(unique(combined_data$perp_sex)))
+age_choices    <- sort(unique(combined_data$age_group))
+```
+
+**Interactive**
+Here’s the Shiny app code for our Arrest Trends Explorer. The main plot is a bar chart of arrests by borough. The sidebar inputs let you filter further by offense or demographic slice.
+```{r}
+ui <- fluidPage(
+  titlePanel("Arrest Trends Explorer"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("boro",    "Borough:",           choices = boro_choices),
+      selectInput("offense", "Offense Type:",      choices = offense_choices),
+      selectInput("demo",    "Demographic Filter:", choices = c("None","Race","Sex","Age Group")),
+
+      conditionalPanel(
+        "input.demo == 'Race'",
+        selectInput("race", " Race:", choices = race_choices)
+      ),
+      conditionalPanel(
+        "input.demo == 'Sex'",
+        selectInput("sex", " Sex:", choices = sex_choices)
+      ),
+      conditionalPanel(
+        "input.demo == 'Age Group'",
+        selectInput("age", " Age Group:", choices = age_choices)
+      )
+    ),
+
+    mainPanel(
+      plotOutput("barPlot", height = "500px")
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  filtered <- reactive({
+    df <- combined_data
+
+    if (input$boro    != "All") df <- df %>% filter(borough   == input$boro)
+    if (input$offense != "All") df <- df %>% filter(ofns_desc == input$offense)
+
+    if (input$demo == "Race"      && input$race != "All")
+      df <- df %>% filter(perp_race == input$race)
+
+    if (input$demo == "Sex"       && input$sex  != "All")
+      df <- df %>% filter(perp_sex  == input$sex)
+
+    if (input$demo == "Age Group" && input$age  != "")
+      df <- df %>% filter(age_group == input$age)
+
+    df
+  })
+
+  output$barPlot <- renderPlot({
+    filtered() %>%
+      count(borough) %>%
+      ggplot(aes(x = reorder(borough, n), y = n, fill = borough)) +
+      geom_col(show.legend = FALSE) +
+      coord_flip() +
+      labs(
+        title = "Number of Arrests by Borough",
+        x     = NULL,
+        y     = "Arrest Count"
+      ) +
+      theme_minimal()
+  })
+}
+
+shinyApp(ui, server)
+```
+**Steps Left**
+The interactive dashboard will let users explore NYPD arrest data from different angles. 
+- The goal is to make the data accessible and engaging by allowing users to view big picture trends like total arrests over time. 
+- Users will also be able to "zoom in" on more specific patterns. 
+- Users will be able to filter the data by borough, offense type, and demographic categories such as age or race. 
+- This gives them the power to investigate questions that are personally meaningful or socially relevant, such as whether certain neighborhoods experience more arrests for specific types of crimes, or how trends shift over the course of a year.
+
