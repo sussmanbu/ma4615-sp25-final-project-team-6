@@ -189,45 +189,31 @@
     "text": "This comes from the file about.qmd.\nThis is a website for the final project for MA[46]15 Data Science with R by Team 6. The members of this team are below.\nhttps://github.com/sussmanbu/ma4615-sp25-final-project-team-6\nFares Sakaan\nhttps://github.com/faressakaan\nAlexis Park\nRhoshnne Paramasivam\nhttps://github.com/RhoshnneP\nTaimur Ahmad\nhttps://github.com/taiahmad\nMinghao Yang\nhttps://github.com/martinyang11\n\n\nAbout this Template.\nThis is based off of the standard Quarto website template from RStudio (2023.09.0 Build 463)."
   },
   {
-    "objectID": "big_picture.html#a-pattern-in-the-data",
-    "href": "big_picture.html#a-pattern-in-the-data",
+    "objectID": "big_picture.html#race-and-arrests-a-disproportionate-burden",
+    "href": "big_picture.html#race-and-arrests-a-disproportionate-burden",
     "title": "Big Picture",
-    "section": "A Pattern in the Data",
-    "text": "A Pattern in the Data\nOver the course of this semester, we analyzed NYPD arrest data merged with unemployment data from the American Community Survey. Our findings? The same kinds of crimes are treated very differently depending on the borough — and depending on the suspect’s race.\nOne particularly stark result: Black and Hispanic individuals in the Bronx and Brooklyn are far more likely to be arrested for non-violent crimes compared to those in other boroughs, even when accounting for population."
+    "section": "Race and Arrests: A Disproportionate Burden",
+    "text": "Race and Arrests: A Disproportionate Burden\n\n\n── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──\n✔ dplyr     1.1.4     ✔ readr     2.1.5\n✔ forcats   1.0.0     ✔ stringr   1.5.1\n✔ ggplot2   3.5.1     ✔ tibble    3.2.1\n✔ lubridate 1.9.4     ✔ tidyr     1.3.1\n✔ purrr     1.0.2     \n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\nℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors\n\n\n\n\n\n\n\n\nFigure 1\n\n\n\n\n\nBlack and Hispanic individuals make up a disproportionately high share of arrests for the most common non-violent offenses across all five boroughs of New York City. This is especially visible in the Bronx, Brooklyn, and Queens, where offenses like misdemeanor assault, vehicle violations, and miscellaneous offenses show clear racial disparities.\nThese patterns are not reflective of crime severity, but rather of enforcement practices. The fact that the same types of offenses are consistently associated with higher arrest proportions for Black and Hispanic populations suggests a systemic pattern of targeted policing. This reinforces the broader concern that communities of color are more heavily surveilled — and more harshly penalized — for low-level offenses."
   },
   {
-    "objectID": "big_picture.html#what-counts-as-non-violent",
-    "href": "big_picture.html#what-counts-as-non-violent",
+    "objectID": "big_picture.html#age-patterns-in-arrests",
+    "href": "big_picture.html#age-patterns-in-arrests",
     "title": "Big Picture",
-    "section": "What Counts as “Non-Violent”?",
-    "text": "What Counts as “Non-Violent”?\nWe focused on crimes labeled as petty theft, trespassing, misdemeanor drug possession, and disorderly conduct. These aren’t serious crimes — and they often don’t lead to jail time. But they can have lasting effects: fines, job loss, and even housing instability.\nThe data suggests that unemployment and economic precarity might be driving up both police presence and arrests in high-poverty neighborhoods."
+    "section": "Age Patterns in Arrests",
+    "text": "Age Patterns in Arrests\nYoung adults aged 18–24 and 25–44 make up the majority of arrests for most offense types. But within these groups, disparities by race persist. The data suggests that early encounters with law enforcement may shape longer-term experiences within the justice system."
   },
   {
-    "objectID": "big_picture.html#a-visual-breakdown",
-    "href": "big_picture.html#a-visual-breakdown",
+    "objectID": "big_picture.html#does-economics-play-a-role",
+    "href": "big_picture.html#does-economics-play-a-role",
     "title": "Big Picture",
-    "section": "A Visual Breakdown",
-    "text": "A Visual Breakdown\n\n\n── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──\n✔ dplyr     1.1.4     ✔ readr     2.1.5\n✔ forcats   1.0.0     ✔ stringr   1.5.1\n✔ ggplot2   3.5.1     ✔ tibble    3.2.1\n✔ lubridate 1.9.4     ✔ tidyr     1.3.1\n✔ purrr     1.0.2     \n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\nℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors\n\n\n\n\n\n\n\n\nFigure 1"
+    "section": "Does Economics Play a Role?",
+    "text": "Does Economics Play a Role?\n\n\n\n\n\n\n\n\nFigure 2\n\n\n\n\n\nArrests for the most common offenses — including petit larceny, felony assault, and drug-related charges — are heavily concentrated among individuals aged 25–44. This age group consistently dominates the arrest proportions across all five offense types. The 18–24 and 45–64 brackets also show notable presence, while individuals under 18 and over 65 make up only a small share.\nThis pattern may reflect broader socioeconomic dynamics: younger adults are often more exposed to environments where petty crimes or drug-related activities are policed more aggressively. The data suggest that policing practices disproportionately affect people in early adulthood, raising concerns about the long-term impacts of criminal records on employment, housing, and community integration.\nThese findings underscore the importance of age-sensitive approaches to justice. Rather than relying on punitive systems, community-driven and rehabilitative responses may offer more effective and equitable outcomes — especially for non-violent offenses committed by younger individuals.\n\n\nInteractive Dashboard\nYou can explore the interactive arrest dashboard here:\n👉 Launch Interactive Dashboard\nOr view it embedded below:\n\n\nThis interactive dashboard allows users to explore arrest patterns across New York City’s boroughs, filtered by offense type and demographic characteristics. By selecting filters for race, sex, or age group, users can examine how specific populations are represented in arrest data — and how those patterns vary across geography.\nFor example, selecting “Race” as the demographic filter reveals disparities in arrest volumes for offenses like petit larceny or drug possession, particularly in boroughs like the Bronx and Brooklyn. Users can further investigate whether certain offenses are more concentrated in specific neighborhoods, or how demographic groups experience differential exposure to law enforcement.\nThis tool complements the broader analysis by giving the public direct access to the data — empowering them to identify patterns of potential over-policing or demographic bias in arrests. Interactive exploration also reinforces the importance of transparency and public accountability in understanding how justice is distributed in our cities."
   },
   {
-    "objectID": "big_picture.html#explore-the-data",
-    "href": "big_picture.html#explore-the-data",
+    "objectID": "big_picture.html#conclusion-systemic-inequality-in-plain-sight",
+    "href": "big_picture.html#conclusion-systemic-inequality-in-plain-sight",
     "title": "Big Picture",
-    "section": "Explore the Data",
-    "text": "Explore the Data\nWant to see the patterns yourself? The interactive dashboard below lets you filter by borough, offense type, and race to explore the distribution of arrests across the city.\n\nInteractive Dashboard\n\nlibrary(tidyverse)\nlibrary(shiny)\n\ncombined_data &lt;- readRDS(\"dataset/combined_nypd_acs_with_coords_fixed.rds\") %&gt;%\n  mutate(unemployment_rate = as.numeric(unemployment_rate))\n\nboro_choices   &lt;- c(\"All\", sort(unique(combined_data$borough)))\noffense_choices &lt;- c(\"All\", sort(unique(combined_data$ofns_desc)))\nrace_choices   &lt;- c(\"All\", sort(unique(combined_data$perp_race)))\nsex_choices    &lt;- c(\"All\", sort(unique(combined_data$perp_sex)))\nage_choices    &lt;- sort(unique(combined_data$age_group))\n\nui &lt;- fluidPage(\n  titlePanel(\"Arrest Trends Explorer\"),\n  sidebarLayout(\n    sidebarPanel(\n      selectInput(\"boro\",    \"Borough:\",           choices = boro_choices),\n      selectInput(\"offense\", \"Offense Type:\",      choices = offense_choices),\n      selectInput(\"demo\",    \"Demographic Filter:\", choices = c(\"None\",\"Race\",\"Sex\",\"Age Group\")),\n\n      conditionalPanel(\n        \"input.demo == 'Race'\",\n        selectInput(\"race\", \" Race:\", choices = race_choices)\n      ),\n      conditionalPanel(\n        \"input.demo == 'Sex'\",\n        selectInput(\"sex\", \" Sex:\", choices = sex_choices)\n      ),\n      conditionalPanel(\n        \"input.demo == 'Age Group'\",\n        selectInput(\"age\", \" Age Group:\", choices = age_choices)\n      )\n    ),\n\n    mainPanel(\n      plotOutput(\"barPlot\", height = \"500px\")\n    )\n  )\n)\n\nserver &lt;- function(input, output, session) {\n  filtered &lt;- reactive({\n    df &lt;- combined_data\n\n    if (input$boro    != \"All\") df &lt;- df %&gt;% filter(borough   == input$boro)\n    if (input$offense != \"All\") df &lt;- df %&gt;% filter(ofns_desc == input$offense)\n\n    if (input$demo == \"Race\"      && input$race != \"All\")\n      df &lt;- df %&gt;% filter(perp_race == input$race)\n\n    if (input$demo == \"Sex\"       && input$sex  != \"All\")\n      df &lt;- df %&gt;% filter(perp_sex  == input$sex)\n\n    if (input$demo == \"Age Group\" && input$age  != \"\")\n      df &lt;- df %&gt;% filter(age_group == input$age)\n\n    df\n  })\n\n  output$barPlot &lt;- renderPlot({\n    filtered() %&gt;%\n      count(borough) %&gt;%\n      ggplot(aes(x = reorder(borough, n), y = n, fill = borough)) +\n      geom_col(show.legend = FALSE) +\n      coord_flip() +\n      labs(\n        title = \"Number of Arrests by Borough\",\n        x     = NULL,\n        y     = \"Arrest Count\"\n      ) +\n      theme_minimal()\n  })\n}\n\nshinyApp(ui, server)\n\nShiny applications not supported in static R Markdown documents"
-  },
-  {
-    "objectID": "big_picture.html#what-this-means",
-    "href": "big_picture.html#what-this-means",
-    "title": "Big Picture",
-    "section": "What This Means",
-    "text": "What This Means\nOur analysis doesn’t say policing alone causes inequality — but it does highlight how police data reflects broader social trends. The sharp racial disparities and their alignment with economic stress are hard to ignore."
-  },
-  {
-    "objectID": "big_picture.html#the-bottom-line",
-    "href": "big_picture.html#the-bottom-line",
-    "title": "Big Picture",
-    "section": "The Bottom Line",
-    "text": "The Bottom Line\nThe geography of non-violent arrests in NYC isn’t random. It mirrors structural inequality in housing, employment, and community investment. We hope this work adds another layer to the public conversation about justice and fairness."
+    "section": "Conclusion: Systemic Inequality in Plain Sight",
+    "text": "Conclusion: Systemic Inequality in Plain Sight\nOur project reveals how arrests in NYC disproportionately impact Black, Hispanic, and younger individuals — especially for non-violent offenses. These patterns highlight concerns about over-policing and demographic bias in certain neighborhoods. By exploring this data interactively, we hope to promote transparency and spark informed public conversation."
   }
 ]
