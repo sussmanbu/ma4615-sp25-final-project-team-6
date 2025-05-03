@@ -7,62 +7,122 @@ filters:
   - shinylive
 ---
 
-![](images/The_Big_Picture_2.jpeg)
+![](images/nypic.jpg)
 
-> In New York City, not all arrests are created equal. Even when it comes to non-violent offenses, who gets arrested — and where — reveals deep patterns of racial and economic inequality.
+# Unequal Enforcement: The Geography of Non-Violent Arrests in NYC
 
-## A Pattern in the Data
+The New York Police Department (NYPD) arrests thousands of individuals each year. But who gets arrested — and for what — tells a deeper story than crime statistics alone. Our investigation into arrest data and unemployment rates across New York City reveals a troubling relationship: **Black and Hispanic residents in economically disadvantaged boroughs face a disproportionate number of non-violent arrests**.
 
-Over the course of this semester, we analyzed NYPD arrest data merged with unemployment data from the American Community Survey. Our findings? The same kinds of crimes are treated very differently depending on the borough — and depending on the suspect's race.
+---
 
-One particularly stark result: **Black and Hispanic individuals in the Bronx and Brooklyn are far more likely to be arrested for non-violent crimes** compared to those in other boroughs, even when accounting for population.
+## Race and Arrests: A Disproportionate Burden
 
-## What Counts as “Non-Violent”?
-
-We focused on crimes labeled as petty theft, trespassing, misdemeanor drug possession, and disorderly conduct. These aren’t serious crimes — and they often don’t lead to jail time. But they can have lasting effects: fines, job loss, and even housing instability.
-
-The data suggests that **unemployment and economic precarity might be driving up both police presence and arrests** in high-poverty neighborhoods.
-
-## A Visual Breakdown
-
-```{r fig-borough-nonviolent, echo=FALSE}
+```{r fig-race-offense-borough, echo=FALSE}
 library(tidyverse)
 
-non_violent_keywords <- c("LARCENY", "TRESPASS", "DRUG", "THEFT", "JOSTLING", "SEX", "MISDEMEANOR")
+df <- read_rds("dataset/combined_nypd_acs_with_coords_fixed.rds")
 
-arrest_data <- read_rds("dataset/combined_nypd_acs_with_coords_fixed.rds") %>%
-  rename(
-    Offense_Description = ofns_desc,
-    Borough_Full = borough,
-    Unemployment = unemployment_rate
-  ) %>%
-  mutate(
-    Unemployment = as.numeric(Unemployment),
-    non_violent = str_detect(toupper(Offense_Description), str_c(non_violent_keywords, collapse = "|"))
-  )
 
-arrest_data %>%
-  group_by(Borough_Full) %>%
-  summarise(
-    total = n(),
-    non_violent_count = sum(non_violent, na.rm = TRUE),
-    non_violent_rate = non_violent_count / total,
-    avg_unemployment = mean(Unemployment, na.rm = TRUE)
-  ) %>%
-  ggplot(aes(x = avg_unemployment, y = non_violent_rate, label = Borough_Full)) +
-  geom_point(size = 4) +
-  geom_text(vjust = -0.5) +
+df <- df %>%
+  rename(Borough = borough, Offense = ofns_desc, Race = perp_race) %>%
+  filter(!is.na(Borough), !is.na(Offense), !is.na(Race))
+
+
+top_offenses <- df %>%
+  count(Borough, Offense, sort = TRUE) %>%
+  group_by(Borough) %>%
+  slice_max(n, n = 5) %>%
+  pull(Offense)
+
+
+filtered <- df %>% filter(Offense %in% top_offenses)
+
+plot_data <- filtered %>%
+  group_by(Borough, Offense, Race) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  group_by(Borough, Offense) %>%
+  mutate(proportion = count / sum(count))
+
+ggplot(plot_data, aes(x = Offense, y = proportion, fill = Race)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~Borough, scales = "free_x") +
   theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1, size = 8)) +
   labs(
-    x = "Average Unemployment Rate (%)",
-    y = "Proportion of Non-Violent Arrests",
-    title = "Arrest Pattern vs. Unemployment Rate by Borough"
+    x = "Top 5 Offense Types (per Borough)",
+    y = "Proportion",
+    title = "Distribution of Top Offense Types by Race and Borough",
+    fill = "Race"
   )
+
 ```
 
-## Explore the Data
+Black and Hispanic individuals make up a disproportionately high share of arrests for the most common non-violent offenses across all five boroughs of New York City. This is especially visible in the Bronx, Brooklyn, and Queens, where offenses like misdemeanor assault, vehicle violations, and miscellaneous offenses show clear racial disparities.
 
-Want to see the patterns yourself? The interactive dashboard below lets you filter by borough, offense type, and race to explore the distribution of arrests across the city.
+These patterns are not reflective of crime severity, but rather of enforcement practices. The fact that the same types of offenses are consistently associated with higher arrest proportions for Black and Hispanic populations suggests a systemic pattern of targeted policing. This reinforces the broader concern that communities of color are more heavily surveilled — and more harshly penalized — for low-level offenses.
+
+
+---
+
+## Age Patterns in Arrests
+
+```{r fig-age-offense, echo=FALSE}
+# Insert cleaned age × offense plot here
+```
+
+Young adults aged 18–24 and 25–44 make up the majority of arrests for most offense types. But within these groups, disparities by race persist. The data suggests that early encounters with law enforcement may shape longer-term experiences within the justice system.
+
+---
+
+## Does Economics Play a Role?
+
+```{r fig-unemployment-nonviolent, echo=FALSE}
+library(tidyverse)
+
+
+df <- read_rds("dataset/combined_nypd_acs_with_coords_fixed.rds")
+
+
+df <- df %>%
+  rename(AgeGroup = age_group, Offense = ofns_desc) %>%
+  filter(!is.na(AgeGroup), !is.na(Offense))
+
+
+top_offenses <- df %>%
+  count(Offense, sort = TRUE) %>%
+  slice_max(n, n = 5) %>%
+  pull(Offense)
+
+
+filtered <- df %>% filter(Offense %in% top_offenses)
+
+
+plot_data <- filtered %>%
+  group_by(Offense, AgeGroup) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  group_by(Offense) %>%
+  mutate(prop = count / sum(count))
+
+
+ggplot(plot_data, aes(x = Offense, y = prop, fill = AgeGroup)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1, size = 9)) +
+  labs(
+    title = "Age Distribution Across Top 5 Offense Types",
+    x = "Offense Type",
+    y = "Proportion",
+    fill = "Age Group"
+  )
+
+```
+
+Arrests for the most common offenses — including petit larceny, felony assault, and drug-related charges — are heavily concentrated among individuals aged 25–44. This age group consistently dominates the arrest proportions across all five offense types. The 18–24 and 45–64 brackets also show notable presence, while individuals under 18 and over 65 make up only a small share.
+
+This pattern may reflect broader socioeconomic dynamics: younger adults are often more exposed to environments where petty crimes or drug-related activities are policed more aggressively. The data suggest that policing practices disproportionately affect people in early adulthood, raising concerns about the long-term impacts of criminal records on employment, housing, and community integration.
+
+These findings underscore the importance of age-sensitive approaches to justice. Rather than relying on punitive systems, community-driven and rehabilitative responses may offer more effective and equitable outcomes — especially for non-violent offenses committed by younger individuals.
+---
 
 ### Interactive Dashboard
 
@@ -144,10 +204,13 @@ server <- function(input, output, session) {
 shinyApp(ui, server)
 ```
 
-## What This Means
+This interactive dashboard allows users to explore arrest patterns across New York City's boroughs, filtered by offense type and demographic characteristics. By selecting filters for race, sex, or age group, users can examine how specific populations are represented in arrest data — and how those patterns vary across geography.
 
-Our analysis doesn’t say policing alone causes inequality — but it does highlight how police data reflects broader social trends. The sharp racial disparities and their alignment with economic stress are hard to ignore.
+For example, selecting “Race” as the demographic filter reveals disparities in arrest volumes for offenses like petit larceny or drug possession, particularly in boroughs like the Bronx and Brooklyn. Users can further investigate whether certain offenses are more concentrated in specific neighborhoods, or how demographic groups experience differential exposure to law enforcement.
 
-## The Bottom Line
+This tool complements the broader analysis by giving the public direct access to the data — empowering them to identify patterns of potential over-policing or demographic bias in arrests. Interactive exploration also reinforces the importance of transparency and public accountability in understanding how justice is distributed in our cities.
 
-The geography of non-violent arrests in NYC isn’t random. It mirrors structural inequality in housing, employment, and community investment. We hope this work adds another layer to the public conversation about justice and fairness.
+## Conclusion: Systemic Inequality in Plain Sight
+
+Our project reveals how arrests in NYC disproportionately impact Black, Hispanic, and younger individuals — especially for non-violent offenses. These patterns highlight concerns about over-policing and demographic bias in certain neighborhoods. By exploring this data interactively, we hope to promote transparency and spark informed public conversation.
+
