@@ -8,7 +8,7 @@ about:
 
 This comes from the file `about.qmd`.
 
-This is a website for the final project for MA[46]15 Data Science with R by Team TEAMNAME.
+This is a website for the final project for MA[46]15 Data Science with R by Team 6.
 The members of this team are below.
 
 https://github.com/sussmanbu/ma4615-sp25-final-project-team-6
