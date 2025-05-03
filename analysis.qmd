@@ -1,70 +1,278 @@
 ---
-title: Analysis
-description: Here we provide a detailed analysis using more sophisticated statistics techniques.
+title: "Analysis"
+description: "A formal analysis exploring the relationship between demographics, geography, and non-violent arrests in NYC."
 toc: true
 draft: false
 ---
 
-![](https://upload.wikimedia.org/wikipedia/commons/7/77/Pebbleswithquarzite.jpg)
+![](images/nypic.2.jpg)
 
-This comes from the file `analysis.qmd`.
+# Arrest Disparities in New York: A Statistical Exploration
 
-We describe here our detailed data analysis. This page will provide an overview of what questions you addressed, illustrations of relevant aspects of the data with tables and figures, and a statistical model that attempts to answer part of the question. You'll also reflect on next steps and further analysis.
+This page presents a formal analysis of the arrest data in New York City, combining NYPD arrest records with economic and demographic information from the American Community Survey (ACS). The goal is to examine how race, age, sex, and economic hardship relate to patterns of non-violent arrests across NYC boroughs.
 
-The audience for this page is someone like your class mates, so you can expect that they have some level of statistical and quantitative sophistication and understand ideas like linear and logistic regression, coefficients, confidence intervals, overfitting, etc. 
+---
 
-While the exact number of figures and tables will vary and depend on your analysis, you should target around 5 to 6. An overly long analysis could lead to losing points.
-If you want you can link back to your blog posts or create separate pages with more details.
+## Motivation and Research Questions
 
-The style of this paper should aim to be that of an academic paper. 
-I don't expect this to be of publication quality but you should keep that aim in mind.
-Avoid using "we" too frequently, for example "We also found that ...". Describe your methodology and your findings but don't describe your whole process.
+Our previous exploratory work showed that Black and Hispanic populations are overrepresented in non-violent arrest categories. Younger individuals, especially males aged 18–34, also make up a large share of these arrests. This section formally investigates:
 
-### Example of loading data
+1. Do racial disparities in arrest outcomes remain after controlling for other factors?
+2. Is borough-level unemployment a statistically significant predictor of non-violent arrests?
+3. Do race and unemployment interact to explain variations in arrest patterns?
 
-The code below shows an example of loading the loan refusal data set (which you should delete at some point).
+---
 
-```{r}
+## Demographic Breakdown of Arrests
+
+```{r fig-demographic-disparities, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
-print(getwd())
-data <- read_rds(here::here("dataset/loan_refusal_clean.rds"))
+df <- read_rds("dataset/combined_nypd_acs_with_coords_fixed.rds") %>%
+  filter(!is.na(perp_race), !is.na(perp_sex), !is.na(age_group))
+
+top_groups <- df %>%
+  count(perp_race, perp_sex, age_group, sort = TRUE) %>%
+  slice_max(n, n = 10)
+
+ggplot(top_groups, aes(x = reorder(perp_race, n), y = n, fill = perp_sex)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~age_group) +
+  labs(title = "Top 10 Arrest Demographic Groups by Age Group",
+       x = "Race", y = "Arrest Count", fill = "Sex") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+### Description
+
+This bar plot displays the **top 10 most common arrest demographic groups**, broken down by **race, sex, and age group**. The groups are faceted by age categories: 18–24, 25–44, and 45–64.
+
+- Across all age groups, **Black males** are the most frequently arrested demographic, particularly within the **25–44** age group, where the arrest count significantly outpaces other categories.
+- **White and Hispanic males** appear consistently in the top ranks, but with notably lower counts.
+- Female arrests are much less common overall, although they do appear for some demographics, particularly **Black and Hispanic females**.
+- The age group 25–44 dominates in terms of volume, highlighting it as the most common age bracket for arrests in this dataset.
+
+This visualization suggests substantial racial and gender disparities in arrest patterns, and motivates further statistical analysis to investigate potential structural or socioeconomic drivers behind these patterns.
+
+
+---
+
+## Logistic Regression: Predicting Non-Violent Arrests
+
+```{r model-logit, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(broom)
+
+# Add borough safely
+df$borough <- df$arrest_boro
+
+# Preprocess data
+model_data <- df %>%
+  mutate(
+    is_nonviolent = str_detect(ofns_desc,
+      regex("LARCENY|TRESPASS|DRUG|FRAUD|MISCHIEF|GAMBLING|PROSTITUTION", ignore_case = TRUE)),
+    perp_race = factor(perp_race),
+    perp_sex = factor(perp_sex),
+    age_group = factor(age_group),
+    borough = factor(borough)
+  ) %>%
+  drop_na(is_nonviolent, unemployment_rate)
+
+# Fit logistic regression with interaction
+model <- glm(
+  is_nonviolent ~ perp_race + perp_sex + age_group + unemployment_rate + perp_race:unemployment_rate,
+  family = binomial,
+  data = model_data
+)
+
+# Show tidy output
+tidy(model, exponentiate = TRUE, conf.int = TRUE)
+
+```
+### Interpretation of Logistic Regression Output
+
+The table above presents the estimated **odds ratios** for non-violent arrests based on various demographic predictors and their interactions.
+
+- The **intercept** represents the baseline log-odds of a non-violent arrest for the reference group (typically White, Male, age group not explicitly listed, with average unemployment rate).
+- **Race Effects**: The odds ratios for `perp_raceBLACK`, `perp_raceHISPANIC`, and `perp_raceASIAN / PACIFIC ISLANDER` reflect how each group differs from the baseline. For instance, a coefficient below 1 suggests a *lower* likelihood of a non-violent arrest relative to the reference race, while a value above 1 suggests a higher likelihood.
+- **Interaction Term**: The interaction between race and unemployment rate allows us to examine whether unemployment affects racial groups differently in terms of non-violent arrest likelihood. The model can reveal whether higher unemployment rates amplify or mitigate racial disparities.
+- **Interpretation Example**: An odds ratio of 0.67 for `perp_raceBLACK` suggests that, all else equal, Black individuals are less likely to be arrested for non-violent crimes than the reference group, holding other variables constant.
+
+This regression table supports a more nuanced understanding of how **race**, **sex**, **age**, and **economic conditions** interact in shaping arrest patterns for non-violent offenses in NYC.
+
+
+---
+
+## Visualized Regression Table
+
+```{r model-table, echo=FALSE}
+
+library(gt)
+
+df$borough <- df$arrest_boro
+
+tidy(model, exponentiate = TRUE, conf.int = TRUE) %>%
+  mutate(term = recode(term,
+    "(Intercept)" = "Intercept",
+    "perp_raceBlack" = "Race: Black",
+    "perp_raceWHITE" = "Race: White",
+    "perp_raceHISPANIC" = "Race: Hispanic",
+    "perp_sexF" = "Sex: Female",
+    "age_group18-24" = "Age: 18–24",
+    "age_group25-44" = "Age: 25–44",
+    "age_group45-64" = "Age: 45–64",
+    "unemployment_rate" = "Unemployment Rate"
+  )) %>%
+  select(term, estimate, conf.low, conf.high, p.value) %>%
+  gt() %>%
+  fmt_number(columns = 2:4, decimals = 2) %>%
+  fmt_number(columns = 5, decimals = 3) %>%
+  cols_label(
+    term = "Variable",
+    estimate = "Odds Ratio",
+    conf.low = "95% CI (Low)",
+    conf.high = "95% CI (High)",
+    p.value = "p-value"
+  ) %>%
+  tab_header(title = "Logistic Regression Results: Predicting Nonviolent Arrests")
+
+```
+### Interpretation of Interaction Effects
+
+The table above provides a visual summary of the **interaction effects** between race and unemployment rate on the likelihood of a non-violent arrest.
+
+- Each row corresponds to a **specific race group at a given unemployment rate**, extracted from the fitted logistic regression model with interaction terms.
+- **Odds Ratios** greater than 1 indicate higher odds of a non-violent arrest compared to the reference group, while values less than 1 indicate lower odds.
+- For example:
+  - `perp_raceWHITE:unemployment_rate7.0` has an odds ratio of **1.93**, suggesting that at 7% unemployment, White individuals are nearly twice as likely to be arrested for non-violent offenses compared to the reference group.
+  - `perp_raceBLACK:unemployment_rate9.3` has an odds ratio of **1.49**, indicating a similar trend among Black individuals at a higher unemployment level.
+
+These interaction terms highlight how **economic context modifies racial disparities** in non-violent arrests. Notably, the effect of unemployment is not uniform across race groups. Some odds ratios approach or cross the threshold of 1, suggesting potential **non-significant or neutral effects**, as also reflected in the **p-values**.
+
+This visualization enables a clearer interpretation of complex regression output and supports nuanced discussion of demographic disparities.
+
+
+---
+
+## Interaction Model: Race × Unemployment
+
+```{r model-interaction, echo=FALSE}
+model_inter <- glm(is_nonviolent ~ perp_race * unemployment_rate + perp_sex + age_group,
+                   data = model_data,
+                   family = "binomial")
+
+tidy(model_inter, exponentiate = TRUE, conf.int = TRUE) %>%
+  filter(str_detect(term, "perp_race|unemployment_rate")) %>%
+  arrange(term)
+```
+### Interpreting the Interaction Between Race and Unemployment Rate
+
+The table above displays coefficients from a logistic regression model that includes interaction terms between `perp_race` and `unemployment_rate`. This allows us to explore how the effect of race on non-violent arrest likelihood varies depending on local economic conditions.
+
+Key takeaways from the interaction terms:
+
+- **ASIAN / PACIFIC ISLANDER** individuals show varying odds of non-violent arrests as unemployment increases:
+  - At 5.0% unemployment, their odds ratio rises to **1.33**.
+  - At 5.8%, the odds increase substantially to **2.05**, indicating a much higher likelihood of non-violent arrests.
+  - However, at 9.3%, the odds ratio drops back to around **1.06**, suggesting a nonlinear effect.
+
+- **BLACK HISPANIC** individuals demonstrate consistently elevated odds across all unemployment levels:
+  - At 5.0% unemployment, the odds ratio is **1.56**, and it remains above **1.3** even at 7.0%.
+
+These findings suggest that **economic strain (unemployment)** amplifies or alters how different racial groups are policed or represented in non-violent arrest data. The non-monotonic patterns for some groups may imply complex socioeconomic or systemic dynamics that require further exploration.
+
+Note: All interpretations assume other covariates (e.g., sex, age group) are held constant.
+
+
+---
+
+## Interaction Visualization
+
+```{r model, echo=FALSE, message=FALSE, warning=FALSE}
+library(ggeffects)
+library(ggplot2)
+model_data <- df %>%
+  mutate(
+    is_nonviolent = factor(
+      str_detect(ofns_desc, regex("LARCENY|TRESPASS|DRUG|FRAUD|MISCHIEF|GAMBLING|PROSTITUTION", ignore_case = TRUE)),
+      levels = c(FALSE, TRUE),
+      labels = c("Violent", "Nonviolent")
+    ),
+    perp_race = factor(perp_race),
+    perp_sex = factor(perp_sex),
+    age_group = factor(age_group),
+    borough = factor(arrest_boro),
+    unemployment_rate = as.numeric(unemployment_rate)
+  ) %>%
+  drop_na(is_nonviolent, unemployment_rate)
+
+model_inter <- glm(
+  is_nonviolent ~ perp_race * unemployment_rate + perp_sex + age_group,
+  data = model_data,
+  family = "binomial"
+)
+preds <- ggpredict(model_inter, terms = c("unemployment_rate", "perp_race"))
+ggplot(preds, aes(x = x, y = predicted, color = group)) +
+  geom_line(size = 1.2) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = group), 
+              alpha = 0.2, color = NA) +
+  labs(
+    title = "Predicted Probability of Nonviolent Arrest by Race and Unemployment Rate",
+    x = "Unemployment Rate (%)",
+    y = "Predicted Probability",
+    color = "Race",
+    fill = "Race"
+  ) +
+  theme_minimal()
+
+```
+The plot above shows the predicted probability of a nonviolent arrest across different levels of unemployment rates, by racial group. While the overall trends vary, we observe that the predicted probability for Black Hispanic and White individuals increases with unemployment, suggesting a potential interaction effect. In contrast, Asian/Pacific Islander individuals show relatively stable predictions. This visualization highlights that unemployment might not affect all racial groups equally in terms of the likelihood of nonviolent arrests.
+
+---
+
+
+## Summary: Predicted Probability of Nonviolent Arrest by Race
+
+The table below presents the predicted probability of a nonviolent arrest for different racial groups at the **average unemployment rate**. These predictions come from the logistic regression model with an interaction term between race and unemployment rate. This table is intended to help readers interpret the model output without requiring statistical background.
+
+```{r summary-predicted-table, echo=FALSE, message=FALSE, warning=FALSE}
+library(ggeffects)
+library(gt)
+
+# 生成预测并转换为普通 data frame
+preds_summary <- ggpredict(model_inter, terms = c("unemployment_rate [mean]", "perp_race")) %>%
+  as.data.frame()
+
+# 创建 summary 表格
+preds_summary %>%
+  select(Race = group, Predicted_Prob = predicted) %>%
+  mutate(Predicted_Prob = round(Predicted_Prob, 3)) %>%
+  gt() %>%
+  cols_label(
+    Race = "Race",
+    Predicted_Prob = "Predicted Probability (Avg Unemployment)"
+  ) %>%
+  tab_header(
+    title = "Predicted Probability of Nonviolent Arrest by Race"
+  )
+
 ```
 
-## Note on Attribution
+---
 
-In general, you should try to provide links to relevant resources, especially those that helped you. You don't have to link to every StackOverflow post you used but if there are explainers on aspects of the data or specific models that you found helpful, try to link to those. Also, try to link to other sources that might support (or refute) your analysis. These can just be regular hyperlinks. You don't need a formal citation.
+## Interpretation and Limitations
 
-If you are directly quoting from a source, please make that clear. You can show long quotes using `>` like this
+The interaction term between **race** and **unemployment rate** in our logistic regression model is **statistically significant**, indicating that the relationship between unemployment and the likelihood of being arrested for a nonviolent offense differs across racial groups. Specifically, in boroughs with **higher unemployment**, **Black** and **Black Hispanic** individuals show **disproportionately higher predicted probabilities** of being arrested for nonviolent crimes. This suggests that socioeconomic context may compound with racial disparities to amplify arrest risks for certain populations. The interaction visualization confirms these patterns, with steeper slopes observed for marginalized racial groups.
 
-```         
-> To be or not to be.
-```
+**Limitations**:
 
-> To be or not to be.
+- **Arrests are not convictions**: Our dataset includes arrest records, not court outcomes. Therefore, some individuals in the data may never have been found guilty of any offense. Policing practices—potentially influenced by racial bias or over-surveillance—may distort patterns of who gets arrested in the first place.  
+- **Borough-level aggregation**: We use borough-level unemployment rates, which may **obscure neighborhood-level or block-level variation**. More granular geographic data would allow for a finer-grained understanding of local economic conditions.  
+- **Nonviolent offense classification**: Our binary outcome relies on **regex-based keyword matching** in offense descriptions. This introduces the possibility of misclassification, as not all nonviolent offenses may be labeled clearly or consistently in the dataset.
 
-------------------------------------------------------------------------
+---
 
-## Rubric: On this page
+## Conclusion
 
-You will
+Our findings suggest that **race remains a significant predictor** of nonviolent arrest outcomes in New York City, even after accounting for socioeconomic factors such as unemployment, age, and sex. The interaction between race and unemployment underscores how **structural inequalities**—economic disadvantage layered atop racial disparities—can intensify the likelihood of arrest for certain groups. These patterns align with broader concerns about equity and justice in urban policing.
 
--   Introduce what motivates your Data Analysis (DA)
-    -   Which variables and relationships are you most interested in?
-    -   What questions are you interested in answering?
-    -   Provide context for the rest of the page. This will include figures/tables that illustrate aspects of the data of your question.
--   Modeling and Inference
-    -   The page will include some kind of formal statistical model. This could be a linear regression, logistic regression, or another modeling framework.
-    -   Explain the ideas and techniques you used to choose the predictors for your model. (Think about including interaction terms and other transformations of your variables.)
-    -   Describe the results of your modelling and make sure to give a sense of the uncertainty in your estimates and conclusions.
--   Explain the flaws and limitations of your analysis
-    -   Are there some assumptions that you needed to make that might not hold? Is there other data that would help to answer your questions?
--   Clarity Figures
-    -   Are your figures/tables/results easy to read, informative, without problems like overplotting, hard-to-read labels, etc?
-    -   Each figure should provide a key insight. Too many figures or other data summaries can detract from this. (While not a hard limit, around 5 total figures is probably a good target.)
-    -   Default `lm` output and plots are typically not acceptable.
--   Clarity of Explanations
-    -   How well do you explain each figure/result?
-    -   Do you provide interpretations that suggest further analysis or explanations for observed phenomenon?
--   Organization and cleanliness.
-    -   Make sure to remove excessive warnings, hide all code, organize with sections or multiple pages, use bullets, etc.
-    -   This page should be self-contained, i.e. provide a description of the relevant data.
+From a policy perspective, this analysis emphasizes the **need for targeted reforms** that address both the **economic vulnerabilities** and **racial injustices** embedded in the criminal justice system. Future work should incorporate more localized data and expand outcome variables beyond arrests to include prosecutions and sentencing. Nevertheless, our results provide **strong evidence of persistent systemic disparities** and offer direction for data-driven intervention strategies.
