@@ -1,0 +1,119 @@
+---
+title: "Blog Post 8"
+author: "Team 6"
+date: "2025-05-02"
+date-modified: "2025-05-02"
+draft: false
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(gt)
+library(ggpubr)
+
+# 读取合并后数据
+arrest_data <- read_rds("dataset/combined_nypd_acs_with_coords_fixed.rds")
+
+# 重命名字段 + 转换数据类型
+arrest_data <- arrest_data %>%
+  rename(
+    Race = perp_race,
+    Borough = arrest_boro,
+    Offense_Description = ofns_desc,
+    Age_Group = age_group,
+    Unemployment = unemployment_rate,
+    Borough_Full = borough
+  ) %>%
+  mutate(Unemployment = as.numeric(Unemployment)) %>%
+  filter(!is.na(Race), !is.na(Borough), !is.na(Offense_Description))
+```
+
+## Introduction
+
+As our project concludes, we aim to present a clear thesis supported by a focused analysis of NYPD arrest data and ACS unemployment data. Throughout the project, we've cleaned and joined multiple datasets, explored key demographic and geographic variables, and iteratively refined our visualizations and statistical summaries.
+
+## Thesis Statement
+
+**Non-violent arrests in NYC disproportionately affect Black and Hispanic individuals in boroughs with higher unemployment rates, particularly the Bronx and Brooklyn.** This pattern highlights the structural intersection between policing and economic inequality.
+
+## Continued Exploratory Data Analysis
+
+Our analysis focused on three areas: demographic disparities in offense types, age patterns, and the relationship between unemployment and non-violent arrests.
+
+### 1. Race and Offense Type by Borough (Top 10 Only)
+
+```{r fig-race-borough-offense, fig.cap = "Top Offense Categories by Race and Borough"}
+top_offenses <- arrest_data %>%
+  count(Offense_Description) %>%
+  top_n(10, n) %>%
+  pull(Offense_Description)
+
+arrest_data %>%
+  filter(Offense_Description %in% top_offenses) %>%
+  count(Race, Borough, Offense_Description) %>%
+  group_by(Borough, Offense_Description) %>%
+  mutate(percentage = n / sum(n)) %>%
+  ggplot(aes(x = Offense_Description, y = percentage, fill = Race)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_wrap(~ Borough) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Top 10 Offense Types", y = "Proportion", fill = "Race")
+```
+
+### 2. Age Group Distribution Across Offense Types (Top 10 Only)
+
+```{r fig-age-offense, fig.cap = "Top Offense Categories by Age Group"}
+arrest_data %>%
+  filter(Offense_Description %in% top_offenses) %>%
+  count(Age_Group, Offense_Description) %>%
+  group_by(Offense_Description) %>%
+  mutate(prop = n / sum(n)) %>%
+  ggplot(aes(x = Offense_Description, y = prop, fill = Age_Group)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Top 10 Offense Types", y = "Proportion", fill = "Age Group")
+```
+
+### 3. Non-Violent Arrests vs. Unemployment Rate
+
+```{r fig-unemployment-crime, fig.cap = "Non-Violent Arrest Proportions vs. Borough Unemployment Rates"}
+non_violent_keywords <- c("LARCENY", "TRESPASS", "DRUG", "THEFT", "JOSTLING", "SEX", "MISDEMEANOR")
+
+arrest_data %>%
+  mutate(non_violent = str_detect(toupper(Offense_Description), str_c(non_violent_keywords, collapse = "|"))) %>%
+  group_by(Borough_Full) %>%
+  summarise(
+    total = n(),
+    non_violent_count = sum(non_violent, na.rm = TRUE),
+    non_violent_rate = non_violent_count / total,
+    avg_unemployment = mean(Unemployment, na.rm = TRUE)
+  ) %>%
+  ggplot(aes(x = avg_unemployment, y = non_violent_rate, label = Borough_Full)) +
+  geom_point(size = 4) +
+  geom_text(vjust = -0.5) +
+  theme_minimal() +
+  labs(
+    x = "Average Unemployment Rate (%)",
+    y = "Proportion of Non-Violent Arrests",
+    title = "Arrest Pattern vs. Unemployment Rate by Borough"
+  )
+```
+
+## Summary Table
+
+```{r tbl-race-summary, results='asis'}
+arrest_data %>%
+  filter(Offense_Description %in% top_offenses) %>%
+  count(Race, Offense_Description) %>%
+  group_by(Race) %>%
+  mutate(Percent = n / sum(n)) %>%
+  filter(n > 100) %>%
+  gt() %>%
+  tab_header(title = "Top Offense Distribution by Race")
+```
+
+## Conclusion
+
+By limiting offense types to the most frequent, clarifying groupings, and connecting arrest trends to borough-level unemployment, our visualizations reveal a consistent pattern: economic stress and structural inequality are closely tied to arrest patterns in NYC. While more work could be done with time-series or spatial mapping, our analysis demonstrates that non-violent arrests are not evenly distributed—and that socioeconomic context matters.
