@@ -5,7 +5,7 @@ account: martin6473
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 14675072
-bundleId: 10222713
+bundleId: 10222767
 url: https://martin6473.shinyapps.io/scripts/
 version: 1
 asMultiple: FALSE

@@ -2,7 +2,7 @@ library(tidyverse)
 library(shiny)
 
 
-combined_data <- readRDS("../dataset/combined_nypd_acs_with_coords_fixed.rds") %>%
+combined_data <- readRDS("combined_nypd_acs_with_coords_fixed.rds") %>%
   mutate(unemployment_rate = as.numeric(unemployment_rate))
 
 boro_choices   <- c("All", sort(unique(combined_data$borough)))
