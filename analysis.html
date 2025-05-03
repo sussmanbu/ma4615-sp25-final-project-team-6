@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Here we provide a detailed analysis using more sophisticated statistics techniques.">
+<meta name="description" content="A formal analysis exploring the relationship between demographics, geography, and non-violent arrests in NYC.">
 
 <title>Analysis – MA [46]15 Final Project</title>
 <style>
@@ -20,40 +20,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -155,9 +121,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#example-of-loading-data" id="toc-example-of-loading-data" class="nav-link active" data-scroll-target="#example-of-loading-data">Example of loading data</a></li>
-  <li><a href="#note-on-attribution" id="toc-note-on-attribution" class="nav-link" data-scroll-target="#note-on-attribution">Note on Attribution</a></li>
-  <li><a href="#rubric-on-this-page" id="toc-rubric-on-this-page" class="nav-link" data-scroll-target="#rubric-on-this-page">Rubric: On this page</a></li>
+  <li><a href="#arrest-disparities-in-new-york-a-statistical-exploration" id="toc-arrest-disparities-in-new-york-a-statistical-exploration" class="nav-link active" data-scroll-target="#arrest-disparities-in-new-york-a-statistical-exploration">Arrest Disparities in New York: A Statistical Exploration</a>
+  <ul class="collapse">
+  <li><a href="#motivation-and-research-questions" id="toc-motivation-and-research-questions" class="nav-link" data-scroll-target="#motivation-and-research-questions">Motivation and Research Questions</a></li>
+  <li><a href="#demographic-breakdown-of-arrests" id="toc-demographic-breakdown-of-arrests" class="nav-link" data-scroll-target="#demographic-breakdown-of-arrests">Demographic Breakdown of Arrests</a>
+  <ul class="collapse">
+  <li><a href="#description" id="toc-description" class="nav-link" data-scroll-target="#description">Description</a></li>
+  </ul></li>
+  <li><a href="#logistic-regression-predicting-non-violent-arrests" id="toc-logistic-regression-predicting-non-violent-arrests" class="nav-link" data-scroll-target="#logistic-regression-predicting-non-violent-arrests">Logistic Regression: Predicting Non-Violent Arrests</a>
+  <ul class="collapse">
+  <li><a href="#interpretation-of-logistic-regression-output" id="toc-interpretation-of-logistic-regression-output" class="nav-link" data-scroll-target="#interpretation-of-logistic-regression-output">Interpretation of Logistic Regression Output</a></li>
+  </ul></li>
+  <li><a href="#visualized-regression-table" id="toc-visualized-regression-table" class="nav-link" data-scroll-target="#visualized-regression-table">Visualized Regression Table</a>
+  <ul class="collapse">
+  <li><a href="#interpretation-of-interaction-effects" id="toc-interpretation-of-interaction-effects" class="nav-link" data-scroll-target="#interpretation-of-interaction-effects">Interpretation of Interaction Effects</a></li>
+  </ul></li>
+  <li><a href="#interaction-model-race-unemployment" id="toc-interaction-model-race-unemployment" class="nav-link" data-scroll-target="#interaction-model-race-unemployment">Interaction Model: Race × Unemployment</a>
+  <ul class="collapse">
+  <li><a href="#interpreting-the-interaction-between-race-and-unemployment-rate" id="toc-interpreting-the-interaction-between-race-and-unemployment-rate" class="nav-link" data-scroll-target="#interpreting-the-interaction-between-race-and-unemployment-rate">Interpreting the Interaction Between Race and Unemployment Rate</a></li>
+  </ul></li>
+  <li><a href="#interaction-visualization" id="toc-interaction-visualization" class="nav-link" data-scroll-target="#interaction-visualization">Interaction Visualization</a></li>
+  <li><a href="#summary-predicted-probability-of-nonviolent-arrest-by-race" id="toc-summary-predicted-probability-of-nonviolent-arrest-by-race" class="nav-link" data-scroll-target="#summary-predicted-probability-of-nonviolent-arrest-by-race">Summary: Predicted Probability of Nonviolent Arrest by Race</a></li>
+  <li><a href="#interpretation-and-limitations" id="toc-interpretation-and-limitations" class="nav-link" data-scroll-target="#interpretation-and-limitations">Interpretation and Limitations</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -171,7 +158,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div>
   <div class="description">
-    Here we provide a detailed analysis using more sophisticated statistics techniques.
+    A formal analysis exploring the relationship between demographics, geography, and non-violent arrests in NYC.
   </div>
 </div>
 
@@ -188,85 +175,1431 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/7/77/Pebbleswithquarzite.jpg" class="img-fluid"></p>
-<p>This comes from the file <code>analysis.qmd</code>.</p>
-<p>We describe here our detailed data analysis. This page will provide an overview of what questions you addressed, illustrations of relevant aspects of the data with tables and figures, and a statistical model that attempts to answer part of the question. You’ll also reflect on next steps and further analysis.</p>
-<p>The audience for this page is someone like your class mates, so you can expect that they have some level of statistical and quantitative sophistication and understand ideas like linear and logistic regression, coefficients, confidence intervals, overfitting, etc.</p>
-<p>While the exact number of figures and tables will vary and depend on your analysis, you should target around 5 to 6. An overly long analysis could lead to losing points. If you want you can link back to your blog posts or create separate pages with more details.</p>
-<p>The style of this paper should aim to be that of an academic paper. I don’t expect this to be of publication quality but you should keep that aim in mind. Avoid using “we” too frequently, for example “We also found that …”. Describe your methodology and your findings but don’t describe your whole process.</p>
-<section id="example-of-loading-data" class="level3">
-<h3 class="anchored" data-anchor-id="example-of-loading-data">Example of loading data</h3>
-<p>The code below shows an example of loading the loan refusal data set (which you should delete at some point).</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.4     ✔ readr     2.1.5
-✔ forcats   1.0.0     ✔ stringr   1.5.1
-✔ ggplot2   3.5.1     ✔ tibble    3.2.1
-✔ lubridate 1.9.4     ✔ tidyr     1.3.1
-✔ purrr     1.0.2     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">getwd</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "/Users/martin/Downloads/BU/SPRING 2025/MA 415/Team 6"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read_rds</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"dataset/loan_refusal_clean.rds"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="note-on-attribution" class="level2">
-<h2 class="anchored" data-anchor-id="note-on-attribution">Note on Attribution</h2>
-<p>In general, you should try to provide links to relevant resources, especially those that helped you. You don’t have to link to every StackOverflow post you used but if there are explainers on aspects of the data or specific models that you found helpful, try to link to those. Also, try to link to other sources that might support (or refute) your analysis. These can just be regular hyperlinks. You don’t need a formal citation.</p>
-<p>If you are directly quoting from a source, please make that clear. You can show long quotes using <code>&gt;</code> like this</p>
-<pre><code>&gt; To be or not to be.</code></pre>
-<blockquote class="blockquote">
-<p>To be or not to be.</p>
-</blockquote>
+<p><img src="images/nypic.2.jpg" class="img-fluid"></p>
+<section id="arrest-disparities-in-new-york-a-statistical-exploration" class="level1">
+<h1>Arrest Disparities in New York: A Statistical Exploration</h1>
+<p>This page presents a formal analysis of the arrest data in New York City, combining NYPD arrest records with economic and demographic information from the American Community Survey (ACS). The goal is to examine how race, age, sex, and economic hardship relate to patterns of non-violent arrests across NYC boroughs.</p>
+<hr>
+<section id="motivation-and-research-questions" class="level2">
+<h2 class="anchored" data-anchor-id="motivation-and-research-questions">Motivation and Research Questions</h2>
+<p>Our previous exploratory work showed that Black and Hispanic populations are overrepresented in non-violent arrest categories. Younger individuals, especially males aged 18–34, also make up a large share of these arrests. This section formally investigates:</p>
+<ol type="1">
+<li>Do racial disparities in arrest outcomes remain after controlling for other factors?</li>
+<li>Is borough-level unemployment a statistically significant predictor of non-violent arrests?</li>
+<li>Do race and unemployment interact to explain variations in arrest patterns?</li>
+</ol>
 <hr>
 </section>
-<section id="rubric-on-this-page" class="level2">
-<h2 class="anchored" data-anchor-id="rubric-on-this-page">Rubric: On this page</h2>
-<p>You will</p>
+<section id="demographic-breakdown-of-arrests" class="level2">
+<h2 class="anchored" data-anchor-id="demographic-breakdown-of-arrests">Demographic Breakdown of Arrests</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-demographic-disparities" class="quarto-float quarto-figure quarto-figure-center anchored" width="672">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-demographic-disparities-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="analysis_files/figure-html/fig-demographic-disparities-1.png" id="fig-demographic-disparities" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-demographic-disparities-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<section id="description" class="level3">
+<h3 class="anchored" data-anchor-id="description">Description</h3>
+<p>This bar plot displays the <strong>top 10 most common arrest demographic groups</strong>, broken down by <strong>race, sex, and age group</strong>. The groups are faceted by age categories: 18–24, 25–44, and 45–64.</p>
 <ul>
-<li>Introduce what motivates your Data Analysis (DA)
+<li>Across all age groups, <strong>Black males</strong> are the most frequently arrested demographic, particularly within the <strong>25–44</strong> age group, where the arrest count significantly outpaces other categories.</li>
+<li><strong>White and Hispanic males</strong> appear consistently in the top ranks, but with notably lower counts.</li>
+<li>Female arrests are much less common overall, although they do appear for some demographics, particularly <strong>Black and Hispanic females</strong>.</li>
+<li>The age group 25–44 dominates in terms of volume, highlighting it as the most common age bracket for arrests in this dataset.</li>
+</ul>
+<p>This visualization suggests substantial racial and gender disparities in arrest patterns, and motivates further statistical analysis to investigate potential structural or socioeconomic drivers behind these patterns.</p>
+<hr>
+</section>
+</section>
+<section id="logistic-regression-predicting-non-violent-arrests" class="level2">
+<h2 class="anchored" data-anchor-id="logistic-regression-predicting-non-violent-arrests">Logistic Regression: Predicting Non-Violent Arrests</h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 40 × 7
+   term                 estimate std.error statistic  p.value conf.low conf.high
+   &lt;chr&gt;                   &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+ 1 (Intercept)             0.415    0.326     -2.69  7.10e- 3    0.214     0.778
+ 2 perp_raceASIAN / PA…    0.848    0.340     -0.486 6.27e- 1    0.441     1.69 
+ 3 perp_raceBLACK          0.674    0.327     -1.21  2.27e- 1    0.360     1.31 
+ 4 perp_raceBLACK HISP…    1.06     0.338      0.167 8.67e- 1    0.552     2.10 
+ 5 perp_raceUNKNOWN        0.520    0.439     -1.49  1.36e- 1    0.218     1.23 
+ 6 perp_raceWHITE          1.04     0.327      0.120 9.04e- 1    0.554     2.02 
+ 7 perp_raceWHITE HISP…    0.812    0.328     -0.633 5.27e- 1    0.432     1.58 
+ 8 perp_sexM               0.886    0.0111   -10.9   7.99e-28    0.867     0.906
+ 9 age_group18-24          1.32     0.0271    10.4   3.72e-25    1.26      1.40 
+10 age_group25-44          1.45     0.0255    14.5   1.16e-47    1.38      1.52 
+# ℹ 30 more rows</code></pre>
+</div>
+</div>
+<section id="interpretation-of-logistic-regression-output" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-of-logistic-regression-output">Interpretation of Logistic Regression Output</h3>
+<p>The table above presents the estimated <strong>odds ratios</strong> for non-violent arrests based on various demographic predictors and their interactions.</p>
 <ul>
-<li>Which variables and relationships are you most interested in?</li>
-<li>What questions are you interested in answering?</li>
-<li>Provide context for the rest of the page. This will include figures/tables that illustrate aspects of the data of your question.</li>
-</ul></li>
-<li>Modeling and Inference
+<li>The <strong>intercept</strong> represents the baseline log-odds of a non-violent arrest for the reference group (typically White, Male, age group not explicitly listed, with average unemployment rate).</li>
+<li><strong>Race Effects</strong>: The odds ratios for <code>perp_raceBLACK</code>, <code>perp_raceHISPANIC</code>, and <code>perp_raceASIAN / PACIFIC ISLANDER</code> reflect how each group differs from the baseline. For instance, a coefficient below 1 suggests a <em>lower</em> likelihood of a non-violent arrest relative to the reference race, while a value above 1 suggests a higher likelihood.</li>
+<li><strong>Interaction Term</strong>: The interaction between race and unemployment rate allows us to examine whether unemployment affects racial groups differently in terms of non-violent arrest likelihood. The model can reveal whether higher unemployment rates amplify or mitigate racial disparities.</li>
+<li><strong>Interpretation Example</strong>: An odds ratio of 0.67 for <code>perp_raceBLACK</code> suggests that, all else equal, Black individuals are less likely to be arrested for non-violent crimes than the reference group, holding other variables constant.</li>
+</ul>
+<p>This regression table supports a more nuanced understanding of how <strong>race</strong>, <strong>sex</strong>, <strong>age</strong>, and <strong>economic conditions</strong> interact in shaping arrest patterns for non-violent offenses in NYC.</p>
+<hr>
+</section>
+</section>
+<section id="visualized-regression-table" class="level2">
+<h2 class="anchored" data-anchor-id="visualized-regression-table">Visualized Regression Table</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div id="cewbeiwtid" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#cewbeiwtid table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#cewbeiwtid thead, #cewbeiwtid tbody, #cewbeiwtid tfoot, #cewbeiwtid tr, #cewbeiwtid td, #cewbeiwtid th {
+  border-style: none;
+}
+
+#cewbeiwtid p {
+  margin: 0;
+  padding: 0;
+}
+
+#cewbeiwtid .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#cewbeiwtid .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#cewbeiwtid .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#cewbeiwtid .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#cewbeiwtid .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#cewbeiwtid .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#cewbeiwtid .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#cewbeiwtid .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#cewbeiwtid .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#cewbeiwtid .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#cewbeiwtid .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#cewbeiwtid .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#cewbeiwtid .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#cewbeiwtid .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#cewbeiwtid .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#cewbeiwtid .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#cewbeiwtid .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#cewbeiwtid .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#cewbeiwtid .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cewbeiwtid .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#cewbeiwtid .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#cewbeiwtid .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#cewbeiwtid .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cewbeiwtid .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#cewbeiwtid .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#cewbeiwtid .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#cewbeiwtid .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cewbeiwtid .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#cewbeiwtid .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#cewbeiwtid .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#cewbeiwtid .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#cewbeiwtid .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#cewbeiwtid .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cewbeiwtid .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#cewbeiwtid .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cewbeiwtid .gt_left {
+  text-align: left;
+}
+
+#cewbeiwtid .gt_center {
+  text-align: center;
+}
+
+#cewbeiwtid .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#cewbeiwtid .gt_font_normal {
+  font-weight: normal;
+}
+
+#cewbeiwtid .gt_font_bold {
+  font-weight: bold;
+}
+
+#cewbeiwtid .gt_font_italic {
+  font-style: italic;
+}
+
+#cewbeiwtid .gt_super {
+  font-size: 65%;
+}
+
+#cewbeiwtid .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#cewbeiwtid .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#cewbeiwtid .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#cewbeiwtid .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#cewbeiwtid .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#cewbeiwtid .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#cewbeiwtid .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#cewbeiwtid .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#cewbeiwtid div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_heading">
+<th colspan="5" class="gt_heading gt_title gt_font_normal gt_bottom_border">Logistic Regression Results: Predicting Nonviolent Arrests</th>
+</tr>
+<tr class="odd gt_col_headings">
+<th id="term" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Variable</th>
+<th id="estimate" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Odds Ratio</th>
+<th id="conf.low" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">95% CI (Low)</th>
+<th id="conf.high" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">95% CI (High)</th>
+<th id="p.value" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">p-value</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">Intercept</td>
+<td class="gt_row gt_right" headers="estimate">0.42</td>
+<td class="gt_row gt_right" headers="conf.low">0.21</td>
+<td class="gt_row gt_right" headers="conf.high">0.78</td>
+<td class="gt_row gt_right" headers="p.value">0.007</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">perp_raceASIAN / PACIFIC ISLANDER</td>
+<td class="gt_row gt_right" headers="estimate">0.85</td>
+<td class="gt_row gt_right" headers="conf.low">0.44</td>
+<td class="gt_row gt_right" headers="conf.high">1.69</td>
+<td class="gt_row gt_right" headers="p.value">0.627</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">perp_raceBLACK</td>
+<td class="gt_row gt_right" headers="estimate">0.67</td>
+<td class="gt_row gt_right" headers="conf.low">0.36</td>
+<td class="gt_row gt_right" headers="conf.high">1.31</td>
+<td class="gt_row gt_right" headers="p.value">0.227</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">perp_raceBLACK HISPANIC</td>
+<td class="gt_row gt_right" headers="estimate">1.06</td>
+<td class="gt_row gt_right" headers="conf.low">0.55</td>
+<td class="gt_row gt_right" headers="conf.high">2.10</td>
+<td class="gt_row gt_right" headers="p.value">0.867</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">perp_raceUNKNOWN</td>
+<td class="gt_row gt_right" headers="estimate">0.52</td>
+<td class="gt_row gt_right" headers="conf.low">0.22</td>
+<td class="gt_row gt_right" headers="conf.high">1.23</td>
+<td class="gt_row gt_right" headers="p.value">0.136</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">Race: White</td>
+<td class="gt_row gt_right" headers="estimate">1.04</td>
+<td class="gt_row gt_right" headers="conf.low">0.55</td>
+<td class="gt_row gt_right" headers="conf.high">2.02</td>
+<td class="gt_row gt_right" headers="p.value">0.904</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">perp_raceWHITE HISPANIC</td>
+<td class="gt_row gt_right" headers="estimate">0.81</td>
+<td class="gt_row gt_right" headers="conf.low">0.43</td>
+<td class="gt_row gt_right" headers="conf.high">1.58</td>
+<td class="gt_row gt_right" headers="p.value">0.527</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">perp_sexM</td>
+<td class="gt_row gt_right" headers="estimate">0.89</td>
+<td class="gt_row gt_right" headers="conf.low">0.87</td>
+<td class="gt_row gt_right" headers="conf.high">0.91</td>
+<td class="gt_row gt_right" headers="p.value">0.000</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">Age: 18–24</td>
+<td class="gt_row gt_right" headers="estimate">1.32</td>
+<td class="gt_row gt_right" headers="conf.low">1.26</td>
+<td class="gt_row gt_right" headers="conf.high">1.40</td>
+<td class="gt_row gt_right" headers="p.value">0.000</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">Age: 25–44</td>
+<td class="gt_row gt_right" headers="estimate">1.45</td>
+<td class="gt_row gt_right" headers="conf.low">1.38</td>
+<td class="gt_row gt_right" headers="conf.high">1.52</td>
+<td class="gt_row gt_right" headers="p.value">0.000</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">Age: 45–64</td>
+<td class="gt_row gt_right" headers="estimate">2.03</td>
+<td class="gt_row gt_right" headers="conf.low">1.93</td>
+<td class="gt_row gt_right" headers="conf.high">2.14</td>
+<td class="gt_row gt_right" headers="p.value">0.000</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">age_group65+</td>
+<td class="gt_row gt_right" headers="estimate">1.59</td>
+<td class="gt_row gt_right" headers="conf.low">1.47</td>
+<td class="gt_row gt_right" headers="conf.high">1.72</td>
+<td class="gt_row gt_right" headers="p.value">0.000</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">unemployment_rate5.0</td>
+<td class="gt_row gt_right" headers="estimate">0.47</td>
+<td class="gt_row gt_right" headers="conf.low">0.24</td>
+<td class="gt_row gt_right" headers="conf.high">0.95</td>
+<td class="gt_row gt_right" headers="p.value">0.032</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">unemployment_rate5.8</td>
+<td class="gt_row gt_right" headers="estimate">0.54</td>
+<td class="gt_row gt_right" headers="conf.low">0.26</td>
+<td class="gt_row gt_right" headers="conf.high">1.14</td>
+<td class="gt_row gt_right" headers="p.value">0.099</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">unemployment_rate7.0</td>
+<td class="gt_row gt_right" headers="estimate">0.77</td>
+<td class="gt_row gt_right" headers="conf.low">0.38</td>
+<td class="gt_row gt_right" headers="conf.high">1.59</td>
+<td class="gt_row gt_right" headers="p.value">0.464</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">unemployment_rate9.3</td>
+<td class="gt_row gt_right" headers="estimate">0.55</td>
+<td class="gt_row gt_right" headers="conf.low">0.25</td>
+<td class="gt_row gt_right" headers="conf.high">1.21</td>
+<td class="gt_row gt_right" headers="p.value">0.132</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">perp_raceASIAN / PACIFIC ISLANDER:unemployment_rate5.0</td>
+<td class="gt_row gt_right" headers="estimate">1.33</td>
+<td class="gt_row gt_right" headers="conf.low">0.64</td>
+<td class="gt_row gt_right" headers="conf.high">2.73</td>
+<td class="gt_row gt_right" headers="p.value">0.435</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">perp_raceBLACK:unemployment_rate5.0</td>
+<td class="gt_row gt_right" headers="estimate">2.08</td>
+<td class="gt_row gt_right" headers="conf.low">1.02</td>
+<td class="gt_row gt_right" headers="conf.high">4.15</td>
+<td class="gt_row gt_right" headers="p.value">0.040</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">perp_raceBLACK HISPANIC:unemployment_rate5.0</td>
+<td class="gt_row gt_right" headers="estimate">1.56</td>
+<td class="gt_row gt_right" headers="conf.low">0.75</td>
+<td class="gt_row gt_right" headers="conf.high">3.19</td>
+<td class="gt_row gt_right" headers="p.value">0.225</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">perp_raceUNKNOWN:unemployment_rate5.0</td>
+<td class="gt_row gt_right" headers="estimate">2.48</td>
+<td class="gt_row gt_right" headers="conf.low">0.94</td>
+<td class="gt_row gt_right" headers="conf.high">6.56</td>
+<td class="gt_row gt_right" headers="p.value">0.066</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">perp_raceWHITE:unemployment_rate5.0</td>
+<td class="gt_row gt_right" headers="estimate">2.08</td>
+<td class="gt_row gt_right" headers="conf.low">1.01</td>
+<td class="gt_row gt_right" headers="conf.high">4.16</td>
+<td class="gt_row gt_right" headers="p.value">0.040</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">perp_raceWHITE HISPANIC:unemployment_rate5.0</td>
+<td class="gt_row gt_right" headers="estimate">1.90</td>
+<td class="gt_row gt_right" headers="conf.low">0.93</td>
+<td class="gt_row gt_right" headers="conf.high">3.81</td>
+<td class="gt_row gt_right" headers="p.value">0.072</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">perp_raceASIAN / PACIFIC ISLANDER:unemployment_rate5.8</td>
+<td class="gt_row gt_right" headers="estimate">2.05</td>
+<td class="gt_row gt_right" headers="conf.low">0.95</td>
+<td class="gt_row gt_right" headers="conf.high">4.33</td>
+<td class="gt_row gt_right" headers="p.value">0.063</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">perp_raceBLACK:unemployment_rate5.8</td>
+<td class="gt_row gt_right" headers="estimate">1.63</td>
+<td class="gt_row gt_right" headers="conf.low">0.77</td>
+<td class="gt_row gt_right" headers="conf.high">3.36</td>
+<td class="gt_row gt_right" headers="p.value">0.190</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">perp_raceBLACK HISPANIC:unemployment_rate5.8</td>
+<td class="gt_row gt_right" headers="estimate">1.42</td>
+<td class="gt_row gt_right" headers="conf.low">0.66</td>
+<td class="gt_row gt_right" headers="conf.high">3.00</td>
+<td class="gt_row gt_right" headers="p.value">0.358</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">perp_raceUNKNOWN:unemployment_rate5.8</td>
+<td class="gt_row gt_right" headers="estimate">1.77</td>
+<td class="gt_row gt_right" headers="conf.low">0.66</td>
+<td class="gt_row gt_right" headers="conf.high">4.78</td>
+<td class="gt_row gt_right" headers="p.value">0.259</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">perp_raceWHITE:unemployment_rate5.8</td>
+<td class="gt_row gt_right" headers="estimate">2.11</td>
+<td class="gt_row gt_right" headers="conf.low">1.00</td>
+<td class="gt_row gt_right" headers="conf.high">4.35</td>
+<td class="gt_row gt_right" headers="p.value">0.046</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">perp_raceWHITE HISPANIC:unemployment_rate5.8</td>
+<td class="gt_row gt_right" headers="estimate">1.73</td>
+<td class="gt_row gt_right" headers="conf.low">0.82</td>
+<td class="gt_row gt_right" headers="conf.high">3.58</td>
+<td class="gt_row gt_right" headers="p.value">0.143</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">perp_raceASIAN / PACIFIC ISLANDER:unemployment_rate7.0</td>
+<td class="gt_row gt_right" headers="estimate">1.53</td>
+<td class="gt_row gt_right" headers="conf.low">0.72</td>
+<td class="gt_row gt_right" headers="conf.high">3.17</td>
+<td class="gt_row gt_right" headers="p.value">0.260</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">perp_raceBLACK:unemployment_rate7.0</td>
+<td class="gt_row gt_right" headers="estimate">2.12</td>
+<td class="gt_row gt_right" headers="conf.low">1.02</td>
+<td class="gt_row gt_right" headers="conf.high">4.28</td>
+<td class="gt_row gt_right" headers="p.value">0.038</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">perp_raceBLACK HISPANIC:unemployment_rate7.0</td>
+<td class="gt_row gt_right" headers="estimate">1.32</td>
+<td class="gt_row gt_right" headers="conf.low">0.62</td>
+<td class="gt_row gt_right" headers="conf.high">2.72</td>
+<td class="gt_row gt_right" headers="p.value">0.457</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">perp_raceUNKNOWN:unemployment_rate7.0</td>
+<td class="gt_row gt_right" headers="estimate">2.05</td>
+<td class="gt_row gt_right" headers="conf.low">0.79</td>
+<td class="gt_row gt_right" headers="conf.high">5.33</td>
+<td class="gt_row gt_right" headers="p.value">0.139</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">perp_raceWHITE:unemployment_rate7.0</td>
+<td class="gt_row gt_right" headers="estimate">1.93</td>
+<td class="gt_row gt_right" headers="conf.low">0.93</td>
+<td class="gt_row gt_right" headers="conf.high">3.91</td>
+<td class="gt_row gt_right" headers="p.value">0.070</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">perp_raceWHITE HISPANIC:unemployment_rate7.0</td>
+<td class="gt_row gt_right" headers="estimate">1.98</td>
+<td class="gt_row gt_right" headers="conf.low">0.95</td>
+<td class="gt_row gt_right" headers="conf.high">4.01</td>
+<td class="gt_row gt_right" headers="p.value">0.061</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">perp_raceASIAN / PACIFIC ISLANDER:unemployment_rate9.3</td>
+<td class="gt_row gt_right" headers="estimate">1.06</td>
+<td class="gt_row gt_right" headers="conf.low">0.47</td>
+<td class="gt_row gt_right" headers="conf.high">2.39</td>
+<td class="gt_row gt_right" headers="p.value">0.884</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">perp_raceBLACK:unemployment_rate9.3</td>
+<td class="gt_row gt_right" headers="estimate">1.49</td>
+<td class="gt_row gt_right" headers="conf.low">0.67</td>
+<td class="gt_row gt_right" headers="conf.high">3.23</td>
+<td class="gt_row gt_right" headers="p.value">0.319</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">perp_raceBLACK HISPANIC:unemployment_rate9.3</td>
+<td class="gt_row gt_right" headers="estimate">1.19</td>
+<td class="gt_row gt_right" headers="conf.low">0.53</td>
+<td class="gt_row gt_right" headers="conf.high">2.62</td>
+<td class="gt_row gt_right" headers="p.value">0.676</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">perp_raceUNKNOWN:unemployment_rate9.3</td>
+<td class="gt_row gt_right" headers="estimate">2.14</td>
+<td class="gt_row gt_right" headers="conf.low">0.78</td>
+<td class="gt_row gt_right" headers="conf.high">5.90</td>
+<td class="gt_row gt_right" headers="p.value">0.138</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="term">perp_raceWHITE:unemployment_rate9.3</td>
+<td class="gt_row gt_right" headers="estimate">1.72</td>
+<td class="gt_row gt_right" headers="conf.low">0.78</td>
+<td class="gt_row gt_right" headers="conf.high">3.76</td>
+<td class="gt_row gt_right" headers="p.value">0.176</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="term">perp_raceWHITE HISPANIC:unemployment_rate9.3</td>
+<td class="gt_row gt_right" headers="estimate">1.56</td>
+<td class="gt_row gt_right" headers="conf.low">0.70</td>
+<td class="gt_row gt_right" headers="conf.high">3.39</td>
+<td class="gt_row gt_right" headers="p.value">0.268</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<section id="interpretation-of-interaction-effects" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-of-interaction-effects">Interpretation of Interaction Effects</h3>
+<p>The table above provides a visual summary of the <strong>interaction effects</strong> between race and unemployment rate on the likelihood of a non-violent arrest.</p>
 <ul>
-<li>The page will include some kind of formal statistical model. This could be a linear regression, logistic regression, or another modeling framework.</li>
-<li>Explain the ideas and techniques you used to choose the predictors for your model. (Think about including interaction terms and other transformations of your variables.)</li>
-<li>Describe the results of your modelling and make sure to give a sense of the uncertainty in your estimates and conclusions.</li>
-</ul></li>
-<li>Explain the flaws and limitations of your analysis
+<li>Each row corresponds to a <strong>specific race group at a given unemployment rate</strong>, extracted from the fitted logistic regression model with interaction terms.</li>
+<li><strong>Odds Ratios</strong> greater than 1 indicate higher odds of a non-violent arrest compared to the reference group, while values less than 1 indicate lower odds.</li>
+<li>For example:
 <ul>
-<li>Are there some assumptions that you needed to make that might not hold? Is there other data that would help to answer your questions?</li>
-</ul></li>
-<li>Clarity Figures
-<ul>
-<li>Are your figures/tables/results easy to read, informative, without problems like overplotting, hard-to-read labels, etc?</li>
-<li>Each figure should provide a key insight. Too many figures or other data summaries can detract from this. (While not a hard limit, around 5 total figures is probably a good target.)</li>
-<li>Default <code>lm</code> output and plots are typically not acceptable.</li>
-</ul></li>
-<li>Clarity of Explanations
-<ul>
-<li>How well do you explain each figure/result?</li>
-<li>Do you provide interpretations that suggest further analysis or explanations for observed phenomenon?</li>
-</ul></li>
-<li>Organization and cleanliness.
-<ul>
-<li>Make sure to remove excessive warnings, hide all code, organize with sections or multiple pages, use bullets, etc.</li>
-<li>This page should be self-contained, i.e.&nbsp;provide a description of the relevant data.</li>
+<li><code>perp_raceWHITE:unemployment_rate7.0</code> has an odds ratio of <strong>1.93</strong>, suggesting that at 7% unemployment, White individuals are nearly twice as likely to be arrested for non-violent offenses compared to the reference group.</li>
+<li><code>perp_raceBLACK:unemployment_rate9.3</code> has an odds ratio of <strong>1.49</strong>, indicating a similar trend among Black individuals at a higher unemployment level.</li>
 </ul></li>
 </ul>
+<p>These interaction terms highlight how <strong>economic context modifies racial disparities</strong> in non-violent arrests. Notably, the effect of unemployment is not uniform across race groups. Some odds ratios approach or cross the threshold of 1, suggesting potential <strong>non-significant or neutral effects</strong>, as also reflected in the <strong>p-values</strong>.</p>
+<p>This visualization enables a clearer interpretation of complex regression output and supports nuanced discussion of demographic disparities.</p>
+<hr>
+</section>
+</section>
+<section id="interaction-model-race-unemployment" class="level2">
+<h2 class="anchored" data-anchor-id="interaction-model-race-unemployment">Interaction Model: Race × Unemployment</h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 34 × 7
+   term                  estimate std.error statistic p.value conf.low conf.high
+   &lt;chr&gt;                    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+ 1 perp_raceASIAN / PAC…    0.848     0.340    -0.486  0.627     0.441      1.69
+ 2 perp_raceASIAN / PAC…    1.33      0.369     0.781  0.435     0.636      2.73
+ 3 perp_raceASIAN / PAC…    2.05      0.385     1.86   0.0628    0.949      4.33
+ 4 perp_raceASIAN / PAC…    1.53      0.377     1.13   0.260     0.719      3.17
+ 5 perp_raceASIAN / PAC…    1.06      0.415     0.146  0.884     0.466      2.39
+ 6 perp_raceBLACK           0.674     0.327    -1.21   0.227     0.360      1.31
+ 7 perp_raceBLACK HISPA…    1.06      0.338     0.167  0.867     0.552      2.10
+ 8 perp_raceBLACK HISPA…    1.56      0.368     1.21   0.225     0.747      3.19
+ 9 perp_raceBLACK HISPA…    1.42      0.384     0.920  0.358     0.661      3.00
+10 perp_raceBLACK HISPA…    1.32      0.373     0.744  0.457     0.624      2.72
+# ℹ 24 more rows</code></pre>
+</div>
+</div>
+<section id="interpreting-the-interaction-between-race-and-unemployment-rate" class="level3">
+<h3 class="anchored" data-anchor-id="interpreting-the-interaction-between-race-and-unemployment-rate">Interpreting the Interaction Between Race and Unemployment Rate</h3>
+<p>The table above displays coefficients from a logistic regression model that includes interaction terms between <code>perp_race</code> and <code>unemployment_rate</code>. This allows us to explore how the effect of race on non-violent arrest likelihood varies depending on local economic conditions.</p>
+<p>Key takeaways from the interaction terms:</p>
+<ul>
+<li><strong>ASIAN / PACIFIC ISLANDER</strong> individuals show varying odds of non-violent arrests as unemployment increases:
+<ul>
+<li>At 5.0% unemployment, their odds ratio rises to <strong>1.33</strong>.</li>
+<li>At 5.8%, the odds increase substantially to <strong>2.05</strong>, indicating a much higher likelihood of non-violent arrests.</li>
+<li>However, at 9.3%, the odds ratio drops back to around <strong>1.06</strong>, suggesting a nonlinear effect.</li>
+</ul></li>
+<li><strong>BLACK HISPANIC</strong> individuals demonstrate consistently elevated odds across all unemployment levels:
+<ul>
+<li>At 5.0% unemployment, the odds ratio is <strong>1.56</strong>, and it remains above <strong>1.3</strong> even at 7.0%.</li>
+</ul></li>
+</ul>
+<p>These findings suggest that <strong>economic strain (unemployment)</strong> amplifies or alters how different racial groups are policed or represented in non-violent arrest data. The non-monotonic patterns for some groups may imply complex socioeconomic or systemic dynamics that require further exploration.</p>
+<p>Note: All interpretations assume other covariates (e.g., sex, age group) are held constant.</p>
+<hr>
+</section>
+</section>
+<section id="interaction-visualization" class="level2">
+<h2 class="anchored" data-anchor-id="interaction-visualization">Interaction Visualization</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/model-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The plot above shows the predicted probability of a nonviolent arrest across different levels of unemployment rates, by racial group. While the overall trends vary, we observe that the predicted probability for Black Hispanic and White individuals increases with unemployment, suggesting a potential interaction effect. In contrast, Asian/Pacific Islander individuals show relatively stable predictions. This visualization highlights that unemployment might not affect all racial groups equally in terms of the likelihood of nonviolent arrests.</p>
+<hr>
+</section>
+<section id="summary-predicted-probability-of-nonviolent-arrest-by-race" class="level2">
+<h2 class="anchored" data-anchor-id="summary-predicted-probability-of-nonviolent-arrest-by-race">Summary: Predicted Probability of Nonviolent Arrest by Race</h2>
+<p>The table below presents the predicted probability of a nonviolent arrest for different racial groups at the <strong>average unemployment rate</strong>. These predictions come from the logistic regression model with an interaction term between race and unemployment rate. This table is intended to help readers interpret the model output without requiring statistical background.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="vygjznicwp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#vygjznicwp table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#vygjznicwp thead, #vygjznicwp tbody, #vygjznicwp tfoot, #vygjznicwp tr, #vygjznicwp td, #vygjznicwp th {
+  border-style: none;
+}
+
+#vygjznicwp p {
+  margin: 0;
+  padding: 0;
+}
+
+#vygjznicwp .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#vygjznicwp .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#vygjznicwp .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#vygjznicwp .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#vygjznicwp .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#vygjznicwp .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#vygjznicwp .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#vygjznicwp .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#vygjznicwp .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#vygjznicwp .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#vygjznicwp .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#vygjznicwp .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#vygjznicwp .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#vygjznicwp .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#vygjznicwp .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#vygjznicwp .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#vygjznicwp .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#vygjznicwp .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#vygjznicwp .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#vygjznicwp .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#vygjznicwp .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#vygjznicwp .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#vygjznicwp .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#vygjznicwp .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#vygjznicwp .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#vygjznicwp .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#vygjznicwp .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#vygjznicwp .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#vygjznicwp .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#vygjznicwp .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#vygjznicwp .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#vygjznicwp .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#vygjznicwp .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#vygjznicwp .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#vygjznicwp .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#vygjznicwp .gt_left {
+  text-align: left;
+}
+
+#vygjznicwp .gt_center {
+  text-align: center;
+}
+
+#vygjznicwp .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#vygjznicwp .gt_font_normal {
+  font-weight: normal;
+}
+
+#vygjznicwp .gt_font_bold {
+  font-weight: bold;
+}
+
+#vygjznicwp .gt_font_italic {
+  font-style: italic;
+}
+
+#vygjznicwp .gt_super {
+  font-size: 65%;
+}
+
+#vygjznicwp .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#vygjznicwp .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#vygjznicwp .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#vygjznicwp .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#vygjznicwp .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#vygjznicwp .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#vygjznicwp .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#vygjznicwp .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#vygjznicwp div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_heading">
+<th colspan="2" class="gt_heading gt_title gt_font_normal gt_bottom_border">Predicted Probability of Nonviolent Arrest by Race</th>
+</tr>
+<tr class="odd gt_col_headings">
+<th id="Race" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">Race</th>
+<th id="Predicted_Prob" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Predicted Probability (Avg Unemployment)</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_center" headers="Race">AMERICAN INDIAN/ALASKAN NATIVE</td>
+<td class="gt_row gt_right" headers="Predicted_Prob">0.193</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="Race">ASIAN / PACIFIC ISLANDER</td>
+<td class="gt_row gt_right" headers="Predicted_Prob">0.228</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="Race">BLACK</td>
+<td class="gt_row gt_right" headers="Predicted_Prob">0.224</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="Race">BLACK HISPANIC</td>
+<td class="gt_row gt_right" headers="Predicted_Prob">0.263</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="Race">UNKNOWN</td>
+<td class="gt_row gt_right" headers="Predicted_Prob">0.202</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="Race">WHITE</td>
+<td class="gt_row gt_right" headers="Predicted_Prob">0.333</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="Race">WHITE HISPANIC</td>
+<td class="gt_row gt_right" headers="Predicted_Prob">0.252</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="interpretation-and-limitations" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation-and-limitations">Interpretation and Limitations</h2>
+<p>The interaction term between <strong>race</strong> and <strong>unemployment rate</strong> in our logistic regression model is <strong>statistically significant</strong>, indicating that the relationship between unemployment and the likelihood of being arrested for a nonviolent offense differs across racial groups. Specifically, in boroughs with <strong>higher unemployment</strong>, <strong>Black</strong> and <strong>Black Hispanic</strong> individuals show <strong>disproportionately higher predicted probabilities</strong> of being arrested for nonviolent crimes. This suggests that socioeconomic context may compound with racial disparities to amplify arrest risks for certain populations. The interaction visualization confirms these patterns, with steeper slopes observed for marginalized racial groups.</p>
+<p><strong>Limitations</strong>:</p>
+<ul>
+<li><strong>Arrests are not convictions</strong>: Our dataset includes arrest records, not court outcomes. Therefore, some individuals in the data may never have been found guilty of any offense. Policing practices—potentially influenced by racial bias or over-surveillance—may distort patterns of who gets arrested in the first place.<br>
+</li>
+<li><strong>Borough-level aggregation</strong>: We use borough-level unemployment rates, which may <strong>obscure neighborhood-level or block-level variation</strong>. More granular geographic data would allow for a finer-grained understanding of local economic conditions.<br>
+</li>
+<li><strong>Nonviolent offense classification</strong>: Our binary outcome relies on <strong>regex-based keyword matching</strong> in offense descriptions. This introduces the possibility of misclassification, as not all nonviolent offenses may be labeled clearly or consistently in the dataset.</li>
+</ul>
+<hr>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Our findings suggest that <strong>race remains a significant predictor</strong> of nonviolent arrest outcomes in New York City, even after accounting for socioeconomic factors such as unemployment, age, and sex. The interaction between race and unemployment underscores how <strong>structural inequalities</strong>—economic disadvantage layered atop racial disparities—can intensify the likelihood of arrest for certain groups. These patterns align with broader concerns about equity and justice in urban policing.</p>
+<p>From a policy perspective, this analysis emphasizes the <strong>need for targeted reforms</strong> that address both the <strong>economic vulnerabilities</strong> and <strong>racial injustices</strong> embedded in the criminal justice system. Future work should incorporate more localized data and expand outcome variables beyond arrests to include prosecutions and sentencing. Nevertheless, our results provide <strong>strong evidence of persistent systemic disparities</strong> and offer direction for data-driven intervention strategies.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
