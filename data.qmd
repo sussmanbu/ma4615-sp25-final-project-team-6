@@ -1,136 +1,218 @@
 ---
-title: Data
-description: We describe the sources of our data and the cleaning process.
+title: "Data"
+description: "We describe the sources of our data and the cleaning process."
 toc: true
 draft: false
 ---
 
-![](images/data-import-cheatsheet-thumbs.png)
+![](images/nypic3.jpg)
+
+# Data Sources and Description
+
+Our project merges **NYPD Arrest Data** with **American Community Survey (ACS)** unemployment data. This section outlines the sources, variables of interest, and how we cleaned and prepared the data for analysis.
+
+---
+
+## Original Data Sources
+
+We used two main publicly available datasets for our project:
+
+###️ NYPD Arrest Data  
+**Link**: [NYPD Arrest Data (Year to Date) — data.gov](https://catalog.data.gov/dataset/nypd-arrest-data-year-to-date)  
+**Description**:  
+This dataset includes arrest records from the New York Police Department, updated quarterly. It contains details on arrest location, offense description, age group, race, sex of the person arrested, and more.  
+**Publisher**: NYC Open Data / NYPD  
+**Last Updated**: January 2025
+
+---
+
+###  American Community Survey (ACS)  
+**Link**: [ACS 5-Year Estimates — census.gov](https://www.census.gov/programs-surveys/acs)  
+**Description**:  
+We extracted borough-level unemployment statistics from ACS table **S2301 (Employment Status)**. These rates were joined with arrest data to study the relationship between local economic conditions and arrests.  
+**Publisher**: United States Census Bureau  
+**Data Year**: 2023
+
+---
+
+###️ NYC Borough Shapefile  
+**Link**: [NYC Borough Boundaries — NYC Planning](https://www.nyc.gov/assets/planning/download/zip/data-maps/open-data/nybb_23a.zip)  
+**Description**:  
+Used for spatial joins and mapping borough-level arrest locations.  
+**Publisher**: NYC Department of City Planning  
+**Format**: Shapefile (SHP)
 
 
-This comes from the file `data.qmd`.
+---
 
-Your first steps in this project will be to find data to work on.
+## Data Cleaning Process
 
-I recommend trying to find data that interests you and that you are knowledgeable about. A bad example would be if you have no interest in video games but your data set is about video games. I also recommend finding data that is related to current events, social justice, and other areas that have an impact.
+We cleaned and merged multiple datasets into one standardized format, with the cleaned result saved as  
+`combined_nypd_acs_with_coords_fixed.rds`.
+
+### Major cleaning steps
+
+- **Selected relevant variables**:  
+  `perp_race`, `perp_sex`, `age_group`, `ofns_desc`, `arrest_boro`, `latitude`, `longitude`, `unemployment_rate`.
+
+- **Removed missing values** in key fields such as `perp_race`, `perp_sex`, `age_group`, and coordinates.
+
+- **Standardized factor levels**: Re-coded values for `age_group`, `perp_race`, and `arrest_boro` to ensure consistent formatting and interpretation.
+
+- **Cleaned string variables**: Trimmed whitespace, fixed inconsistent capitalization (e.g., `ofns_desc` and `pd_desc`), and applied `str_to_title` where appropriate.
+
+- **Joined multiple datasets**:  
+  - Merged 2024 NYPD Arrest data with 2023 ACS unemployment data (`S2301`, `S1701`, `S1901`) by borough.
+  - Used shapefiles (`nybb.shp`) to ensure accurate geographic mapping and merge borough-level unemployment statistics to spatial layers.
+
+- **Added spatial coordinates** using `sf::st_as_sf()` to create an `sf` object for mapping purposes, based on the `longitude` and `latitude` values from the arrest records.
+
+- **Removed unnecessary columns** like arrest key, jurisdiction code, and other administrative identifiers not useful for analysis.
+
+- **Exported the cleaned dataset** using `write_rds()` to `dataset/combined_nypd_acs_with_coords_fixed.rds` for efficient loading in analysis pages.
+
+This process allowed us to produce a well-structured dataset suitable for modeling, visualization, and spatial analysis across NYC boroughs. The cleaned file integrates both demographic and economic data, enabling analysis of nonviolent arrests across geographic and racial dimensions.
 
 
-Initially, you will study _one dataset_ but later you will need to combine that data with another dataset. For this reason, I recommend finding data that has some date and/or location components. These types of data are conducive to interesting visualizations and analysis and you can also combine this data with other data that also has a date or location variable.
-Data from the census, weather data, economic data, are all relatively easy to combine with other data with time/location components.
+---
 
+## Arrest Counts by Race
 
-## What makes a good data set?
-
-* Data you are interested in and care about.
-* Data where there are a lot of potential questions that you can explore.
-* A data set that isn't completely cleaned already.
-* Multiple sources for data that you can combine.
-* Some type of time and/or location component.
-
-
-## Where to keep data?
-
-
-Below 50mb: In `dataset` folder
-
-Above 50mb: In `dataset-ignore` folder which you will have to create manually. This folder will be ignored by `git` so you'll have to manually sync these files across your team.
-
-### Sharing your data
-
-
-For small datasets (<50mb), you can use the `dataset` folder that is tracked by github. Stage and commit the files just like you would any other file.
-
-For larger datasets, you'll need to create a new folder in the project root directory named `dataset-ignore`. This will be ignored by git (based off the `.gitignore` file in the project root directory) which will help you avoid issues with Github's size limits. Your team will have to manually make sure the data files in `dataset-ignore` are synced across team members.
-
-Your [clean_data.R](/scripts/clean_data.R) file in the `scripts` folder is the file where you will import the raw data that you download, clean it, and write `.rds` file(s) (using `write_rds`) that you'll load in your analysis page. If desirable, you can have multiple scripts that produce different derived data sets, just make sure to link to them on this page.
-
-You should never use absolute paths (eg. `/Users/danielsussman/path/to/project/` or `C:\MA415\\Final_Project\`).
-Instead, use the `here` function from the [`here` package](https://here.r-lib.org/articles/here.html) to avoid path problems.
-
-### Clean data script
-
-The idea behind this file is that someone coming to your website could largely replicate your analyses after running this script on the original data sets to clean them.
-This file might create a derivative data set that you then use for your subsequent analysis.
-Note that you don't need to run this script from every post/page.
-Instead, you can load in the results of this script, which will usually be `.rds` files. In your data page you'll describe how these results were created. If you have a very large data set, you might save smaller data sets that you can use for exploration purposes.
-To link to this file, you can use `[cleaning script](/scripts/clean_data.R)` wich appears as [cleaning script](/scripts/clean_data.R). 
-
-----
-
-## Rubric: On this page
-
-You will
-
-* Describe where/how to find data.
-  * You must include a link to the original data source(s). Make sure to provide attribution to those who collected the data.
-
-Link to the original data source: https://catalog.data.gov/dataset/nypd-arrest-data-year-to-date
-The dataset can be found from data.gov and we used the csv file under the link above. 
-
-  * Why was the data collected/curated? Who put it together? (This is important, if you don't know why it was collected then that might not be a good dataset to look at.
-  
-The data includes all arrests made by the NYPD in New York City, manually extracted quarterly and reviewed by the Office of Management Analysis and Planning. Originally created in 2018 and last updated in January 2025, it provides detailed information on crime type, location, time of enforcement, and suspect demographics. This publicly available dataset offers insights into the patterns and nature of police enforcement activity. 
-
-* Describe the different data files used and what each variable means. 
-  * If you have many variables then only describe the most relevant ones, possibly grouping together variables that are similar, and summarize the rest.
-  
-Out of the 19 variables in the dataset, we focused on selecting only the variables relevant to our analysis - race category, gender, age group, borough of arrest, offense category, and police description of the crime.
-
-  * Use figures or tables to help explain the data. For example, showing a histogram or bar chart for a particularly important variable can provide a quick overview of the values that variable tends to take.
-  
-```{r}
+```{r fig-arrest-by-race, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 cleaned_data <- read_rds("dataset/cleaned_dataset.rds")
 cleaned_data %>%
   count(perp_race, sort = TRUE) %>%
   ggplot(aes(x = reorder(perp_race, n), y = n)) +
-  geom_col() +
+  geom_col(fill = "#4472C4") +
   coord_flip() +
   labs(
     title = "Number of Arrests by Race",
     x = "Race",
     y = "Number of Arrests"
-  )
+  ) +
+  theme_minimal()
 ```
-The bar chart shows the number of arrests by race category. The majority of arrests are of individuals identified as Black. Other categories including White Hispanic and Black Hispanic appear frequently, whereas some categories — including American Indian/Alaskan Native — are far less common. This plot summarizes which groups are most represented in the dataset and also raises questions about potential systemic factors contributing to arrest trends.
 
-* Describe any cleaning you had to do for your data.
-  * You *must* include a link to your `clean_data.R` file.
-  * Rename variables and recode factors to make data more clear.
-  * Also, describe any additional R packages you used outside of those covered in class.
-  * Describe and show code for how you combined multiple data files and any cleaning that was necessary for that.
-  * Some repetition of what you do in your `clean_data.R` file is fine and encouraged if it helps explain what you did.
-* Organization, clarity, cleanliness of the page
-  * Make sure to remove excessive warnings, use clean easy-to-read code (without side scrolling), organize with sections, use bullets and other organization tools, etc.
-  * This page should be self-contained.
-  
-Data cleaning:
-Link to cleaned data file: https://github.com/sussmanbu/ma4615-sp25-final-project-team-6/blob/main/dataset/cleaned_dataset.rds
 
-To clean the NYPD arrest dataset, we focused on selecting only the variables relevant to our analysis - race category, gender, age group, borough of arrest, offense category, and police description of the crime. We removed fully empty columns and unnecessary categories such as arrest date, arrest key, and jurisdiction code. We standardized column names and cleaned string variables by trimming whitespace and applying consistent formatting (e.g., title-casing offense descriptions). All categorical variables, such as age group, race, and borough were converted to factors for easier future analysis. We also eliminated any rows with missing values for easier future analysis as well. Here is the code we used to clean our dataset:
+This bar chart summarizes the total number of arrests by race across all NYPD records in the dataset.
 
+- **Black individuals** represent the highest number of arrests by a wide margin, surpassing 120,000 cases.
+- **White Hispanic** and **Black Hispanic** groups follow, with noticeable but lower totals.
+- **White** and **Asian / Pacific Islander** individuals are arrested at significantly lower rates.
+- The **Unknown** and **American Indian/Alaskan Native** categories appear rarely, possibly due to underreporting or classification limitations.
+
+This visual reinforces racial disparities observed in NYC arrest data and provides strong motivation for deeper statistical analysis of structural bias.
+
+
+---
+
+## Map 1: Arrests Overlaid on Unemployment Rates
+
+```{r map-arrest-unemp, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
-library(janitor)
-library(lubridate)
-raw_data <- read_csv("dataset/NYPD_Arrest_Data__Year_to_Date_.csv")
-cleaned_data <- raw_data %>%
-  clean_names() %>%                                         
-  select(where(~ !all(is.na(.)))) %>%                      
-  select(                                                   
-    perp_race,           
-    perp_sex,            
-    age_group,           
-    arrest_boro,         
-    ofns_desc,           
-    pd_desc              
-  ) %>%
-  mutate(
-    perp_race = factor(str_trim(perp_race)),                
-    perp_sex = factor(str_trim(perp_sex)),
-    age_group = factor(str_trim(age_group)),
-    arrest_boro = factor(str_trim(arrest_boro)),
-    ofns_desc = str_to_title(str_trim(ofns_desc)),          
-    pd_desc = str_to_title(str_trim(pd_desc))
-  ) %>%
-  drop_na()                                                 
-write_rds(cleaned_data, "dataset/cleaned_dataset.rds")
+library(sf)
+
+combined_data <- read_rds("dataset/combined_nypd_acs_with_coords_fixed.rds")
+nyc_map <- st_read("dataset/nybb.shp", quiet = TRUE)
+
+combined_data <- combined_data %>%
+  mutate(unemployment_rate = as.numeric(unemployment_rate))
+
+borough_unemp <- combined_data %>%
+  group_by(borough) %>%
+  summarise(unemployment_rate = mean(unemployment_rate, na.rm = TRUE))
+
+nyc_map <- nyc_map %>%
+  mutate(borough = case_when(
+    BoroName == "Manhattan" ~ "MANHATTAN",
+    BoroName == "Brooklyn" ~ "BROOKLYN",
+    BoroName == "Queens" ~ "QUEENS",
+    BoroName == "Bronx" ~ "BRONX",
+    BoroName == "Staten Island" ~ "STATEN ISLAND"
+  )) %>%
+  left_join(borough_unemp %>% select(borough, unemployment_rate), by = "borough") %>%
+  select(-matches("^unemployment_rate\\\\..*"))
+
+
+arrest_points <- combined_data %>%
+  filter(!is.na(longitude), !is.na(latitude)) %>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326, remove = FALSE)
+
+set.seed(42)
+plot_data <- arrest_points %>% sample_n(3000)
+
+ggplot() +
+  geom_sf(data = nyc_map, aes(fill = unemployment_rate), color = "white") +
+  scale_fill_gradient(low = "lightyellow", high = "darkred", na.value = "grey80") +
+  geom_sf(data = plot_data, aes(color = perp_race), size = 1, alpha = 0.6) +
+  labs(
+    title = "NYC Arrest Locations Overlaid on Borough Unemployment Rates (2024)",
+    subtitle = "Boroughs shaded by unemployment rate. Points show arrests colored by race.",
+    fill = "Unemployment Rate (%)",
+    color = "Race"
+  ) +
+  theme_minimal()
+```
+
+This map visualizes the spatial distribution of 3,000 sampled arrests in New York City, overlaid on borough-level unemployment rates from the American Community Survey (2024).
+
+- **Borough fill color** represents the average unemployment rate, ranging from pale yellow (lower unemployment) to dark red (higher unemployment).
+- **Colored dots** indicate the location of individual arrests, with each color representing a different racial group.
+
+From this map, we observe:
+
+- **The Bronx**, which has the **highest unemployment rate**, shows a dense cluster of arrests, particularly among **Black** and **Hispanic** individuals.
+- **Manhattan** and **Brooklyn** show mixed patterns, but also include neighborhoods with both high unemployment and high arrest density.
+- **Staten Island** and **Queens** have relatively lower unemployment and fewer arrests overall.
+
+This geospatial visualization helps us connect economic conditions with policing outcomes, suggesting that economic hardship and race may jointly influence where and who gets arrested.
+
+
+---
+
+## Map 2: Simplified Arrest Location View
+
+```{r map-simple-arrest, echo=FALSE, message=FALSE, warning=FALSE}
+ggplot() +
+  geom_sf(data = nyc_map, fill = "gray95", color = "black") +
+  geom_sf(data = plot_data, aes(color = perp_race), size = 1, alpha = 0.6) +
+  labs(
+    title = "Arrest Locations in NYC (2024)",
+    subtitle = "Each point represents an arrest. Colored by race.",
+    color = "Race"
+  ) +
+  theme_minimal()
+```
+
+This simplified map provides a **clean spatial overview** of arrest locations across New York City in 2024. Each point represents a single arrest, with colors denoting the race of the arrested individual.
+
+- The **underlying borough boundaries** are shown in light gray with black outlines to keep the focus on arrest points.
+- Dense clusters of points are clearly visible in **Brooklyn**, **the Bronx**, and **Upper Manhattan**, indicating higher concentrations of police activity.
+- Racial disparities are visually apparent, with **Black (green)** and **White Hispanic (purple)** individuals making up a significant portion of arrests across multiple boroughs.
+- **Staten Island** and **eastern Queens** show relatively fewer arrest locations, consistent with lower population density and arrest rates in those areas.
+
+This visual is useful for gaining an intuitive sense of **geographic distribution** and **racial composition** in NYC arrest patterns, independent of economic overlays.
+
+
+---
+
+## Final Data Files
+
+After cleaning and merging, we generated a single standardized `.rds` file that combines arrest data, demographic variables, unemployment statistics, and geolocation for mapping. This file is the basis for all subsequent analysis and visualization.
+
+### `combined_nypd_acs_with_coords_fixed.rds`
+
+| Variable Name        | Description                                                                 |
+|----------------------|-----------------------------------------------------------------------------|
+| `perp_race`          | Race of the person arrested (e.g., BLACK, WHITE HISPANIC, UNKNOWN)          |
+| `perp_sex`           | Gender of the person arrested (M / F)                                       |
+| `age_group`          | Age category (e.g., 18-24, 25-44)                                            |
+| `ofns_desc`          | NYPD offense description (e.g., LARCENY, TRESPASS)                          |
+| `arrest_boro`        | Borough where the arrest took place (e.g., MANHATTAN, BRONX)                |
+| `unemployment_rate`  | Borough-level unemployment rate (from ACS S2301)                            |
+| `longitude`, `latitude` | Geographic coordinates of the arrest, used for mapping                  |
+
+**File Location**: `dataset/combined_nypd_acs_with_coords_fixed.rds`  
+
+This file serves as the foundation for modeling, mapping, and statistical inference throughout the analysis. It allows spatial, demographic, and economic patterns to be studied jointly.
