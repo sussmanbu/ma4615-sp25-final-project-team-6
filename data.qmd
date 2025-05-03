@@ -17,7 +17,7 @@ Our project merges **NYPD Arrest Data** with **American Community Survey (ACS)**
 
 We used two main publicly available datasets for our project:
 
-###️ NYPD Arrest Data  
+### NYPD Arrest Data  
 **Link**: [NYPD Arrest Data (Year to Date) — data.gov](https://catalog.data.gov/dataset/nypd-arrest-data-year-to-date)  
 **Description**:  
 This dataset includes arrest records from the New York Police Department, updated quarterly. It contains details on arrest location, offense description, age group, race, sex of the person arrested, and more.  
