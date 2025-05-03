@@ -7,6 +7,7 @@ filters:
   - shinylive
 ---
 
+
 ![](images/nypic.jpg)
 
 # Unequal Enforcement: The Geography of Non-Violent Arrests in NYC
@@ -17,7 +18,7 @@ The New York Police Department (NYPD) arrests thousands of individuals each year
 
 ## Race and Arrests: A Disproportionate Burden
 
-```{r fig-race-offense-borough, echo=FALSE}
+```{r fig-race-offense-borough, echo=FALSE,message=FALSE}
 library(tidyverse)
 
 df <- read_rds("dataset/combined_nypd_acs_with_coords_fixed.rds")
@@ -66,17 +67,8 @@ These patterns are not reflective of crime severity, but rather of enforcement p
 
 ## Age Patterns in Arrests
 
-```{r fig-age-offense, echo=FALSE}
-# Insert cleaned age × offense plot here
-```
 
-Young adults aged 18–24 and 25–44 make up the majority of arrests for most offense types. But within these groups, disparities by race persist. The data suggests that early encounters with law enforcement may shape longer-term experiences within the justice system.
-
----
-
-## Does Economics Play a Role?
-
-```{r fig-unemployment-nonviolent, echo=FALSE}
+```{r fig-myplot, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 
 
@@ -122,8 +114,57 @@ Arrests for the most common offenses — including petit larceny, felony assault
 This pattern may reflect broader socioeconomic dynamics: younger adults are often more exposed to environments where petty crimes or drug-related activities are policed more aggressively. The data suggest that policing practices disproportionately affect people in early adulthood, raising concerns about the long-term impacts of criminal records on employment, housing, and community integration.
 
 These findings underscore the importance of age-sensitive approaches to justice. Rather than relying on punitive systems, community-driven and rehabilitative responses may offer more effective and equitable outcomes — especially for non-violent offenses committed by younger individuals.
+
 ---
 
+## Does Economics Play a Role?
+```{r fig-unemployment-nonviolent, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+
+
+combined_data <- readRDS("dataset/combined_nypd_acs_with_coords_fixed.rds")
+
+nonviolent_keywords <- c("LARCENY", "TRESPASS", "DRUG", "FRAUD", "MISCHIEF", "GAMBLING", "PROSTITUTION")
+
+
+nonviolent_data <- combined_data %>%
+  filter(str_detect(ofns_desc, regex(paste(nonviolent_keywords, collapse = "|"), ignore_case = TRUE))) %>%
+  mutate(arrest_boro = case_when(
+    arrest_boro == "B" ~ "BRONX",
+    arrest_boro == "K" ~ "BROOKLYN",
+    arrest_boro == "M" ~ "MANHATTAN",
+    arrest_boro == "Q" ~ "QUEENS",
+    arrest_boro == "S" ~ "STATEN ISLAND",
+    TRUE ~ arrest_boro
+  )) %>%
+  drop_na(unemployment_rate)
+
+
+plot_data <- nonviolent_data %>%
+  group_by(arrest_boro) %>%
+  summarise(
+    avg_unemp = mean(as.numeric(unemployment_rate), na.rm = TRUE),
+    nonviolent_count = n()
+  )
+
+
+ggplot(plot_data, aes(x = avg_unemp, y = nonviolent_count)) +
+  geom_point(size = 3, color = "#E0AA00") +
+  geom_smooth(method = "lm", se = TRUE, color = "#E0AA00", fill = "#FFF3C4") +
+  labs(
+    title = "Unemployment Rate vs. Nonviolent Arrests by Borough",
+    x = "Average Unemployment Rate (%)",
+    y = "Number of Nonviolent Arrests"
+  ) +
+  theme_minimal()
+
+```
+Economic conditions appear to correlate with patterns in nonviolent arrests across New York City's boroughs. In the chart above, we observe a positive relationship between the average unemployment rate and the number of nonviolent arrests in each borough. Boroughs like the Bronx and Brooklyn, which face higher unemployment rates, also report a disproportionately large number of arrests for nonviolent offenses—such as drug possession, petty theft, and trespassing.
+
+This trend suggests that economic hardship may contribute to increased vulnerability to low-level policing. While unemployment does not directly cause crime, it can reflect broader systemic issues—such as underinvestment in certain communities, limited access to education, and fewer economic opportunities—that may lead to a heavier police presence and enforcement in economically disadvantaged areas.
+
+
+---
 ### Interactive Dashboard
 
 You can explore the interactive arrest dashboard here:
@@ -145,4 +186,3 @@ This tool complements the broader analysis by giving the public direct access to
 ## Conclusion: Systemic Inequality in Plain Sight
 
 Our project reveals how arrests in NYC disproportionately impact Black, Hispanic, and younger individuals — especially for non-violent offenses. These patterns highlight concerns about over-policing and demographic bias in certain neighborhoods. By exploring this data interactively, we hope to promote transparency and spark informed public conversation.
-
