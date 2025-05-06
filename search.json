@@ -245,6 +245,13 @@
     "text": "This comes from the file about.qmd.\nThis is a website for the final project for MA[46]15 Data Science with R by Team 6. The members of this team are below.\nhttps://github.com/sussmanbu/ma4615-sp25-final-project-team-6\nFares Sakaan\nhttps://github.com/faressakaan\nAlexis Park\nRhoshnne Paramasivam\nhttps://github.com/RhoshnneP\nTaimur Ahmad\nhttps://github.com/taiahmad\nMinghao Yang\nhttps://github.com/martinyang11\n\n\nAbout this Template.\nThis is based off of the standard Quarto website template from RStudio (2023.09.0 Build 463)."
   },
   {
+    "objectID": "big_picture.html#project-demo-video",
+    "href": "big_picture.html#project-demo-video",
+    "title": "Big Picture",
+    "section": "🎥 Project Demo Video",
+    "text": "🎥 Project Demo Video\nYou can watch a short 4-minute video demonstration of our interactive dashboard and key findings here:\n👉 Watch Video on Google Drive\nThis video walks through our Shiny dashboard and highlights racial, age-based, and economic disparities in NYC non-violent arrest patterns.\nPresented by: Alexis Park"
+  },
+  {
     "objectID": "big_picture.html#race-and-arrests-a-disproportionate-burden",
     "href": "big_picture.html#race-and-arrests-a-disproportionate-burden",
     "title": "Big Picture",
