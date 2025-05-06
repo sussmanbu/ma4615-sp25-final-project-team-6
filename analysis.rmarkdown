@@ -7,6 +7,8 @@ draft: false
 
 
 
+
+
 ![](images/nypic.2.jpg)
 
 # Arrest Disparities in New York: A Statistical Exploration
@@ -29,6 +31,8 @@ Our previous exploratory work showed that Black and Hispanic populations are ove
 
 
 
+
+
 ```{r fig-demographic-disparities, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 df <- read_rds("dataset/combined_nypd_acs_with_coords_fixed.rds") %>%
@@ -48,6 +52,8 @@ ggplot(top_groups, aes(x = reorder(perp_race, n), y = n, fill = perp_sex)) +
 ```
 
 
+
+
 ### Description
 
 This bar plot displays the **top 10 most common arrest demographic groups**, broken down by **race, sex, and age group**. The groups are faceted by age categories: 18–24, 25–44, and 45–64.
@@ -63,6 +69,8 @@ This visualization suggests substantial racial and gender disparities in arrest 
 ---
 
 ## Logistic Regression: Predicting Non-Violent Arrests
+
+
 
 
 
@@ -98,6 +106,8 @@ tidy(model, exponentiate = TRUE, conf.int = TRUE)
 ```
 
 
+
+
 ### Interpretation of Logistic Regression Output
 
 The table above presents the estimated **odds ratios** for non-violent arrests based on various demographic predictors and their interactions.
@@ -113,6 +123,8 @@ This regression table supports a more nuanced understanding of how **race**, **s
 ---
 
 ## Visualized Regression Table
+
+
 
 
 
@@ -150,6 +162,8 @@ tidy(model, exponentiate = TRUE, conf.int = TRUE) %>%
 ```
 
 
+
+
 ### Interpretation of Interaction Effects
 
 The table above provides a visual summary of the **interaction effects** between race and unemployment rate on the likelihood of a non-violent arrest.
@@ -171,6 +185,8 @@ This visualization enables a clearer interpretation of complex regression output
 
 
 
+
+
 ```{r model-interaction, echo=FALSE}
 model_inter <- glm(is_nonviolent ~ perp_race * unemployment_rate + perp_sex + age_group,
                    data = model_data,
@@ -180,6 +196,8 @@ tidy(model_inter, exponentiate = TRUE, conf.int = TRUE) %>%
   filter(str_detect(term, "perp_race|unemployment_rate")) %>%
   arrange(term)
 ```
+
+
 
 
 ### Interpreting the Interaction Between Race and Unemployment Rate
@@ -204,6 +222,8 @@ Note: All interpretations assume other covariates (e.g., sex, age group) are hel
 ---
 
 ## Interaction Visualization
+
+
 
 
 
@@ -247,6 +267,8 @@ ggplot(preds, aes(x = x, y = predicted, color = group)) +
 ```
 
 
+
+
 The plot above shows the predicted probability of a nonviolent arrest across different levels of unemployment rates, by racial group. While the overall trends vary, we observe that the predicted probability for Black Hispanic and White individuals increases with unemployment, suggesting a potential interaction effect. In contrast, Asian/Pacific Islander individuals show relatively stable predictions. This visualization highlights that unemployment might not affect all racial groups equally in terms of the likelihood of nonviolent arrests.
 
 ---
@@ -255,6 +277,8 @@ The plot above shows the predicted probability of a nonviolent arrest across dif
 ## Summary: Predicted Probability of Nonviolent Arrest by Race
 
 The table below presents the predicted probability of a nonviolent arrest for different racial groups at the **average unemployment rate**. These predictions come from the logistic regression model with an interaction term between race and unemployment rate. This table is intended to help readers interpret the model output without requiring statistical background.
+
+
 
 
 
@@ -283,6 +307,8 @@ preds_summary %>%
 
 
 
+
+
 ---
 
 ## Interpretation and Limitations
@@ -302,4 +328,5 @@ The interaction term between **race** and **unemployment rate** in our logistic 
 Our findings suggest that **race remains a significant predictor** of nonviolent arrest outcomes in New York City, even after accounting for socioeconomic factors such as unemployment, age, and sex. The interaction between race and unemployment underscores how **structural inequalities**—economic disadvantage layered atop racial disparities—can intensify the likelihood of arrest for certain groups. These patterns align with broader concerns about equity and justice in urban policing.
 
 From a policy perspective, this analysis emphasizes the **need for targeted reforms** that address both the **economic vulnerabilities** and **racial injustices** embedded in the criminal justice system. Future work should incorporate more localized data and expand outcome variables beyond arrests to include prosecutions and sentencing. Nevertheless, our results provide **strong evidence of persistent systemic disparities** and offer direction for data-driven intervention strategies.
+
 
