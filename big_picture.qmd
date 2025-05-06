@@ -16,6 +16,20 @@ The New York Police Department (NYPD) arrests thousands of individuals each year
 
 ---
 
+## 🎥 Project Demo Video
+
+You can watch a short 4-minute video demonstration of our interactive dashboard and key findings here:
+
+👉 [Watch Video on Google Drive](https://drive.google.com/file/d/10OH5HilOwfSvhzOKKfF0GucCzBrxzQ8s/view?usp=sharing)
+
+This video walks through our Shiny dashboard and highlights racial, age-based, and economic disparities in NYC non-violent arrest patterns.
+
+**Presented by: Alexis Park**
+
+
+
+---
+
 ## Race and Arrests: A Disproportionate Burden
 
 ```{r fig-race-offense-borough, echo=FALSE,message=FALSE}
